@@ -19,8 +19,8 @@ export default function DatePicker() {
  
   return (
     <div className="p-0">
-      <Popover placement="bottom">
-        <PopoverHandler>
+      <Popover placement="bottom" className="">
+        <PopoverHandler className="">
           <Input
             label="Select a Date"
             onChange={() => null}
@@ -36,7 +36,7 @@ export default function DatePicker() {
             showOutsideDays
             className="border-0"
             classNames={{
-              caption: "flex justify-center py-2 mb-4 relative items-center",
+              caption: "flex justify-center py-1   mb-4 relative items-center",
               caption_label: "text-sm font-medium text-gray-900",
               nav: "flex items-center",
               nav_button:
