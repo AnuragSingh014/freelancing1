@@ -21,7 +21,8 @@ export function AccountTable() {
                 "Content-Type": "application/json",
                 accept: "*/*",
               },
-              body: JSON.stringify({}), // Send an empty JSON object if the body is required
+              // body: "", // Send an empty JSON object if the body is required
+              body: {}
             }
           );
 
