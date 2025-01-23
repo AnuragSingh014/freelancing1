@@ -11,10 +11,10 @@ const App = () => {
       <div className='flex'>
       <div><Navbar /></div>
       <div className='w-[80%]'> 
-      <Summary />
-      <Instances />
+      {/* <Summary /> */}
+      {/* <Instances /> */}
       <CompanyExpense />
-      <Advisory />
+      {/* <Advisory /> */}
       </div>
       </div>
       

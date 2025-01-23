@@ -17,10 +17,10 @@ export function AccountTable() {
             `http://4.213.167.72/swagger/api/Consumption/TotalCost?from=${from}&to=${to}`,
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                accept: "*/*",
-              },
+              // headers: {
+              //   "Content-Type": "application/json",
+              //   accept: "*/*",
+              // },
               // body: "", // Send an empty JSON object if the body is required
               body: {}
             }
