@@ -14,17 +14,17 @@ const Summary = () => {
       </div>
       <div className="flex gap-1 mt-6">
         <Pamplet
-          url={"/public/summary/summary1.jpeg"}
+          url={"/summary/summary1.jpeg"}
           heading="Chargeback Summary"
           title="Chargeback Summary"
         />
         <Pamplet
-          url={"/public/summary/summary2.jpeg"}
+          url={"/summary/summary2.jpeg"}
           heading="Expense Summary"
           title="Expense Summary"
         />
         <Pamplet
-          url={"/public/summary/summary3.jpeg"}
+          url={"/summary/summary3.jpeg"}
           heading="Optmizer Summary"
           title="Optmizer Summary"
         />
