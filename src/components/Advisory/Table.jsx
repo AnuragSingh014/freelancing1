@@ -2,10 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
 const TABLE_HEAD = [
-  "Category",
-  "Impact",
-  "Impacted Field",
-  "Description"
+  "Deployment ID",
+  "Role Name",
+  "Current SKU",
+  "Target SKU",
+  "Recommendation Message",
+  "Region ID",
+  "Subscription ID",
+  "Duration",
+  "Recommendation Type ID",
+  "Problem",
+  "Solution",
+  "Savings Amount",
+  "Annual Savings Amount",
 ];
 
 const Table = ({ meterRegion }) => {
@@ -20,9 +29,7 @@ const Table = ({ meterRegion }) => {
       try {
         setLoading(true);
         const response = await fetch("/api/api/Consumption/Advisory", {
-          headers: {
-            accept: "*/*",
-          },
+          headers: { accept: "*/*" },
         });
 
         if (!response.ok) {
@@ -30,7 +37,30 @@ const Table = ({ meterRegion }) => {
         }
 
         const result = await response.json();
-        setData(result.value || []);
+        // Transform the API response to match the required format
+        const transformedData = result.value.map((item) => ({
+          deploymentId: item.name,
+          roleName:
+            item.properties?.resourceMetadata?.resourceId?.split("/").pop() ||
+            "N/A",
+          currentSku: item.properties?.extendedProperties?.sku || "N/A",
+          targetSku: item.properties?.extendedProperties?.commitment || "N/A",
+          recommendationMessage:
+            item.properties?.shortDescription?.recommendationMessage || "N/A",
+          regionId: item.properties?.extendedProperties?.scope || "N/A",
+          subscriptionId: item.properties?.subscriptionId || "N/A",
+          duration: item.properties?.extendedProperties?.duration || "N/A",
+          recommendationTypeId:
+            item.properties?.recommendationTypeId || "N/A",
+          problem: item.properties?.shortDescription?.problem || "N/A",
+          solution: item.properties?.shortDescription?.solution || "N/A",
+          savingsAmount:
+            item.properties?.extendedProperties?.savingsAmount || "0",
+          annualSavingsAmount:
+            item.properties?.extendedProperties?.annualSavingsAmount || "0",
+        }));
+
+        setData(transformedData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -43,7 +73,7 @@ const Table = ({ meterRegion }) => {
 
   const filteredData = data.filter((item) => {
     if (!meterRegion) return true;
-    return item.properties.impactedField.toLowerCase().includes(meterRegion.toLowerCase());
+    return item.regionId.toLowerCase().includes(meterRegion.toLowerCase());
   });
 
   const currentItems = filteredData.slice(
@@ -66,6 +96,9 @@ const Table = ({ meterRegion }) => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const truncateText = (text, maxLength) =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 
   if (loading) {
     return (
@@ -98,7 +131,7 @@ const Table = ({ meterRegion }) => {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-bold leading-none"
+                    className="font-bold leading-none text-center"
                   >
                     {head}
                   </Typography>
@@ -112,42 +145,22 @@ const Table = ({ meterRegion }) => {
               const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
 
               return (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-bold max-w-[100px] truncate"
-                      title={item.properties.category}
+                <tr key={item.deploymentId} className="hover:bg-gray-50">
+                  {Object.values(item).map((value, idx) => (
+                    <td
+                      key={idx}
+                      className={`${classes} max-w-[200px] truncate`}
+                      title={value}
                     >
-                      {item.category}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.impact}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.type}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600 max-w-[150px] truncate"
-                      title={item.id}
-                    >
-                      {item.id.length > 16 ? `${item.id.slice(0, 16)}...` : item.id}
-                    </Typography>
-                  </td>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {truncateText(value, 20)}
+                      </Typography>
+                    </td>
+                  ))}
                 </tr>
               );
             })}
@@ -163,18 +176,7 @@ const Table = ({ meterRegion }) => {
             className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             type="button"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
+            Previous
           </button>
 
           <p className="text-slate-600">
@@ -190,18 +192,7 @@ const Table = ({ meterRegion }) => {
             className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             type="button"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                clipRule="evenodd"
-              />
-            </svg>
+            Next
           </button>
         </div>
       </div>
