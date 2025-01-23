@@ -18,9 +18,10 @@ export function AccountTable() {
             {
               method: "POST",
               headers: {
+                "Content-Type": "application/json",
                 accept: "*/*",
               },
-              body: "",
+              body: JSON.stringify({}), // Send an empty JSON object if the body is required
             }
           );
 

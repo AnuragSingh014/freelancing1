@@ -15,11 +15,13 @@ export function ResourceTable({ resourceGroup }) {
         const response = await fetch(
           `http://4.213.167.72/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}`,
           {
+            method: "GET", // Explicitly specify the HTTP method for clarity
             headers: {
               Accept: "*/*",
             },
           }
         );
+        
         const data = await response.json();
         const rows = data.properties.rows.map(([preTaxCost, usageDate]) => ({
           preTaxCost,

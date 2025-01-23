@@ -13,11 +13,13 @@ export function ServiceTable() {
         const response = await fetch(
           "http://4.213.167.72/swagger/api/Consumption/CostManagementServiceBy",
           {
+            method: "GET", // Explicitly specify the HTTP method
             headers: {
-              accept: "*/*",
+              Accept: "*/*", // Capitalized 'Accept' for consistency
             },
           }
         );
+        
         const data = await response.json();
         const rows = data.properties.rows.map(([preTaxCost, , serviceName]) => ({
           preTaxCost,

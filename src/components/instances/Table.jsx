@@ -20,11 +20,13 @@ const Table = ({ meterRegion }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/api/Consumption/usage-details", {
-          headers: {
-            accept: "*/*",
-          },
-        });
+        const response = await fetch("http://4.213.167.72/swagger/api/Consumption/usage-details", {
+  method: "GET", // Explicitly specifying the method for clarity
+  headers: {
+    Accept: "*/*", // Standardizing the header key capitalization
+  },
+});
+
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
