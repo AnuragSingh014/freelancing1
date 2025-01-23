@@ -11,7 +11,7 @@ export function ServiceTable() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://4.213.167.72/swagger/api/Consumption/CostManagementServiceBy",
+          "https://4.213.167.72/swagger/api/Consumption/CostManagementServiceBy",
           {
             method: "GET", // Explicitly specify the HTTP method
             headers: {
