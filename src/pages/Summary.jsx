@@ -15,18 +15,21 @@ const Summary = () => {
       <div className="flex gap-1 mt-6">
         <Pamplet
           url={"/summary/summary1.jpeg"}
-          heading="Chargeback Summary"
-          title="Chargeback Summary"
+          heading="Finops"
+          title="Finops"
+          route="/expense"
         />
         <Pamplet
           url={"/summary/summary2.jpeg"}
-          heading="Expense Summary"
-          title="Expense Summary"
+          heading="Consumption"
+          title="Consumption"
+          route="/consumption"
         />
         <Pamplet
           url={"/summary/summary3.jpeg"}
-          heading="Optmizer Summary"
-          title="Optmizer Summary"
+          heading="Advisory"
+          title="Advisory"
+          route="/advisory"
         />
       </div>
     </div>

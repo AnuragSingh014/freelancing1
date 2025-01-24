@@ -45,32 +45,35 @@ export function Navbar() {
           </ListItem>
         </Link>
 
-        <Link to="/instances">
-          <ListItem>
-            <ListItemPrefix>
-              <InboxIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Instances
-            <ListItemSuffix>
-              <Chip
-                value="14"
-                size="sm"
-                variant="ghost"
-                color="blue-gray"
-                className="rounded-full"
-              />
-            </ListItemSuffix>
-          </ListItem>
-        </Link>
+        
 
         <Link to="/expense">
           <ListItem>
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5" />
             </ListItemPrefix>
-            Expense
+            Finops
           </ListItem>
         </Link>
+
+        <Link to="/consumption">
+          <ListItem>
+            <ListItemPrefix>
+              <UserCircleIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Consumption
+          </ListItem>
+        </Link>
+
+        <Link to="/instances">
+          <ListItem>
+            <ListItemPrefix>
+              <InboxIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Instances
+          </ListItem>
+        </Link>
+
       </List>
     </Card>
   );

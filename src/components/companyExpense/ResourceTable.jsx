@@ -89,7 +89,7 @@ export function ResourceTable({ resourceGroup }) {
                             variant="small"
                             className="font-normal text-gray-600"
                           >
-                            {`$${preTaxCost.toFixed(2)}`}
+                            {` ₹${preTaxCost.toFixed(2)}`}
                           </Typography>
                         </td>
                       </tr>

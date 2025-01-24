@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import SearchBox from "../components/instances/SearchBox";
-import Box1 from "../components/instances/Box1";
-import Savings from "../components/instances/Savings";
-import Table from "../components/instances/Table";
+import SearchBox from "../components/consumption/SearchBox";
+import Box1 from "../components/consumption/Box1";
+import Savings from "../components/consumption/Savings";
+import Table from "../components/consumption/Table";
 
 
-const Instances = () => {
+const Consumption = () => {
   const [meterRegion, setMeterRegion] = useState("");
 
   const handleMeterRegionChange = (e) => {
@@ -21,7 +21,7 @@ const Instances = () => {
     <div className="p-4 w-full">
       {/* heading */}
       <div className="flex flex-row items-center justify-between">
-        <div className="text-3xl">Instances</div>
+        <div className="text-3xl">Consumption</div>
 
         <div className="flex flex-row gap-1.5 items-end">
           <div>
@@ -59,4 +59,4 @@ const Instances = () => {
   );
 };
 
-export default Instances;
+export default Consumption;
