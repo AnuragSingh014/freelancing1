@@ -13,7 +13,7 @@ const Box1 = () => {
         <div className="border-gray-200" style={{borderWidth: '0.25px'}}></div>
         <div className="w-1/2 flex flex-col items-center justify-center">
           <div className="w-1/2 text-center">Potential savings per year</div>
-          <div className="text-2xl font-semibold">$25413.12</div>
+          <div className="text-2xl font-semibold">$25413.1212</div>
         </div>
       </div>
   )
