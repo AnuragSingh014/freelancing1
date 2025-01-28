@@ -55,14 +55,14 @@ const Box1 = () => {
       style={{ borderWidth: "0.25px" }}
     >
       <div className="w-1/2 flex flex-col items-center justify-center">
-        <div>Instances Current spend</div>
+        <div>savingsAmount</div>
         <div className="text-2xl font-semibold">
           {loading ? "Loading..." : `₹${83*instanceSpend.toFixed(2)}`}
         </div>
       </div>
       <div className="border-gray-200" style={{ borderWidth: "0.25px" }}></div>
       <div className="w-1/2 flex flex-col items-center justify-center">
-        <div className="w-1/2 text-center">Potential savings per year</div>
+        <div className="w-1/2 text-center">annualSavingsAmount</div>
         <div className="text-2xl font-semibold">
           {loading ? "Loading..." : `₹${83*potentialSavings.toFixed(2)}`}
         </div>

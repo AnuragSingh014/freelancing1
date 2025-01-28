@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
+
+
 const TABLE_HEAD = [
-  "Deployment ID",
   "Role Name",
   "Current SKU",
   "Target SKU",
-  "Recommendation Message",
-  "Region ID",
-  "Subscription ID",
-  "Duration",
-  "Recommendation Type ID",
-  "Problem",
-  "Solution",
   "Savings Amount",
   "Annual Savings Amount",
+  "Max CPU P95",
+  "Max Network P95",
+  "Max Memory P95"
 ];
 
 const Table = ({ meterRegion }) => {
@@ -29,35 +26,23 @@ const Table = ({ meterRegion }) => {
       try {
         setLoading(true);
         const response = await fetch("http://4.213.167.72/swagger/api/Consumption/Advisory", {
-  headers: { accept: "*/*" },
-});
+          headers: { accept: "*/*" },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        // Transform the API response to match the required format
         const transformedData = result.value.map((item) => ({
-          deploymentId: item.name,
-          roleName:
-            item.properties?.resourceMetadata?.resourceId?.split("/").pop() ||
-            "N/A",
-          currentSku: item.properties?.extendedProperties?.sku || "N/A",
-          targetSku: item.properties?.extendedProperties?.commitment || "N/A",
-          recommendationMessage:
-            item.properties?.shortDescription?.recommendationMessage || "N/A",
-          regionId: item.properties?.extendedProperties?.scope || "N/A",
-          subscriptionId: item.properties?.subscriptionId || "N/A",
-          duration: item.properties?.extendedProperties?.duration || "N/A",
-          recommendationTypeId:
-            item.properties?.recommendationTypeId || "N/A",
-          problem: item.properties?.shortDescription?.problem || "N/A",
-          solution: item.properties?.shortDescription?.solution || "N/A",
-          savingsAmount:
-            item.properties?.extendedProperties?.savingsAmount || "0",
-          annualSavingsAmount:
-            item.properties?.extendedProperties?.annualSavingsAmount || "0",
+          roleName: item.properties?.extendedProperties?.roleName || "N/A",
+          currentSku: item.properties?.extendedProperties?.currentSku || "N/A",
+          targetSku: item.properties?.extendedProperties?.targetSku || "N/A",
+          savingsAmount: `$${item.properties?.extendedProperties?.savingsAmount || "0"}`,
+          annualSavingsAmount: `$${item.properties?.extendedProperties?.annualSavingsAmount || "0"}`,
+          maxCpuP95: `${item.properties?.extendedProperties?.MaxCpuP95 || "0"}%`,
+          maxTotalNetworkP95: `${item.properties?.extendedProperties?.MaxTotalNetworkP95 || "0"}%`,
+          maxMemoryP95: `${item.properties?.extendedProperties?.MaxMemoryP95 || "0"}%`,
         }));
 
         setData(transformedData);
@@ -73,7 +58,7 @@ const Table = ({ meterRegion }) => {
 
   const filteredData = data.filter((item) => {
     if (!meterRegion) return true;
-    return item.regionId.toLowerCase().includes(meterRegion.toLowerCase());
+    return item.roleName.toLowerCase().includes(meterRegion.toLowerCase());
   });
 
   const currentItems = filteredData.slice(
@@ -96,9 +81,6 @@ const Table = ({ meterRegion }) => {
       setCurrentPage(currentPage - 1);
     }
   };
-
-  const truncateText = (text, maxLength) =>
-    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 
   if (loading) {
     return (
@@ -128,11 +110,7 @@ const Table = ({ meterRegion }) => {
             <tr>
               {TABLE_HEAD.map((head) => (
                 <th key={head} className="border-b border-gray-300 pb-4 pt-10">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-bold leading-none text-center"
-                  >
+                  <Typography className="font-bold leading-none text-center text-gray-700">
                     {head}
                   </Typography>
                 </th>
@@ -145,22 +123,47 @@ const Table = ({ meterRegion }) => {
               const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
 
               return (
-                <tr key={item.deploymentId} className="hover:bg-gray-50">
-                  {Object.values(item).map((value, idx) => (
-                    <td
-                      key={idx}
-                      className={`${classes} max-w-[200px] truncate`}
-                      title={value}
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {truncateText(value, 20)}
-                      </Typography>
-                    </td>
-                  ))}
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className={classes}>
+                    <Typography className="font-normal">
+                      {item.roleName}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography className="font-normal">
+                      {item.currentSku}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography className="font-normal">
+                      {item.targetSku}
+                    </Typography>
+                  </td>
+                  <td className={`${classes} text-right`}>
+                    <Typography className="font-normal">
+                      {item.savingsAmount}
+                    </Typography>
+                  </td>
+                  <td className={`${classes} text-right`}>
+                    <Typography className="font-normal">
+                      {item.annualSavingsAmount}
+                    </Typography>
+                  </td>
+                  <td className={`${classes} text-center`}>
+                    <Typography className="font-normal">
+                      {item.maxCpuP95}
+                    </Typography>
+                  </td>
+                  <td className={`${classes} text-center`}>
+                    <Typography className="font-normal">
+                      {item.maxTotalNetworkP95}
+                    </Typography>
+                  </td>
+                  <td className={`${classes} text-center`}>
+                    <Typography className="font-normal">
+                      {item.maxMemoryP95}
+                    </Typography>
+                  </td>
                 </tr>
               );
             })}
@@ -173,24 +176,19 @@ const Table = ({ meterRegion }) => {
           <button
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
-            className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            type="button"
+            className="rounded-md border border-gray-300 px-4 py-2 text-sm transition-all hover:bg-gray-100 disabled:opacity-50"
           >
             Previous
           </button>
 
-          <p className="text-slate-600">
-            Page <strong className="text-slate-800">{currentPage}</strong> of{" "}
-            <strong className="text-slate-800">
-              {Math.ceil(filteredData.length / itemsPerPage)}
-            </strong>
+          <p className="text-sm text-gray-600">
+            Page {currentPage} of {Math.ceil(filteredData.length / itemsPerPage)}
           </p>
 
           <button
             onClick={handleNextPage}
             disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
-            className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            type="button"
+            className="rounded-md border border-gray-300 px-4 py-2 text-sm transition-all hover:bg-gray-100 disabled:opacity-50"
           >
             Next
           </button>

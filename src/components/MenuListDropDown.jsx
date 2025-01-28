@@ -12,18 +12,20 @@ export function MenuListDropDown({ onChange, name }) {
   };
 
   return (
-    <Menu className="border-0">
-      <MenuHandler style={{ outline: 'none' }} className=" border-0 p-0 font-medium test-sm normal-case shadow-none hover:shadow-none hover:border-none bg-white text-black">
+    <Menu className="border-0 bg-orange-500">
+      <MenuHandler 
+        style={{ outline: 'none' }} 
+        className="border-0 font-medium text-sm normal-case shadow-none hover:shadow-none hover:border-none bg-orange-500 text-black p-0 w-full"
+      >
         <Button
-          className="normal-case flex flex-row items-center border-0"
-          style={{ fontSize: "0.875rem", fontWeight: "500",outline: 'none'  }}
-  
+          className="normal-case flex flex-row items-center border-0 bg-orange-500 w-full"
+          style={{ fontSize: "0.875rem", fontWeight: "500", outline: 'none' }}
         >
           {name}
         </Button>
       </MenuHandler>
       <MenuList 
-        className="max-h-60 overflow-y-auto rounded-md bg-white shadow-md border-0" 
+        className="max-h-60 p-0 overflow-y-auto rounded-md bg-white shadow-md border-0 w-64" // Set a fixed width for the MenuList
       > 
         <MenuItem onClick={() => handleMenuItemClick("AzureBackupRG_centralindia_1")}>AzureBackupRG_centralindia_1</MenuItem>
         <MenuItem onClick={() => handleMenuItemClick("cloud-shell-storage-centralindia")}>cloud-shell-storage-centralindia</MenuItem>

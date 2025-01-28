@@ -9,7 +9,7 @@ const Summary = () => {
         <div className="text-3xl font-medium">Summary</div>
         <div className="flex gap-1 mt-3">
           <div className="text-sm"> Summary &gt;</div>
-          <MenuListDropDown className="text-black p-0 m-0"/>
+          {/* <MenuListDropDown className="text-black p-0 m-0"/> */}
         </div>
       </div>
       <div className="flex gap-1 mt-6">

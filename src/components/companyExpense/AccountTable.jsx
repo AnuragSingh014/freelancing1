@@ -2,7 +2,7 @@ import { Card, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
-const TABLE_HEAD = ["Month", "Total Cost (INR)"];
+const TABLE_HEAD = ["Month", "Total Cost"];
 
 export function AccountTable() {
   const [tableRows, setTableRows] = useState([]);
@@ -13,16 +13,19 @@ export function AccountTable() {
     const fetchData = async () => {
       try {
         const fetchMonthData = async (from, to) => {
+          const fromFormatted = dayjs(from).format("YYYYMMDD");
+          const toFormatted = dayjs(to).format("YYYYMMDD");
+
+          console.log("Fetching data for:", fromFormatted, toFormatted); // Debugging
+
           const response = await fetch(
-            `http://4.213.167.72/swagger/api/Consumption/TotalCost?from=${from}&to=${to}`,
+            `http://4.213.167.72/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}`,
             {
               method: "POST",
-              // headers: {
-              //   "Content-Type": "application/json",
-              //   accept: "*/*",
-              // },
-              // body: "", // Send an empty JSON object if the body is required
-              body: {}
+              headers: {
+                accept: "*/*",
+              },
+              body: "",
             }
           );
 
@@ -31,6 +34,8 @@ export function AccountTable() {
           }
 
           const data = await response.json();
+          console.log("API Response:", data); // Debugging
+
           if (!data.properties || !data.properties.rows) {
             throw new Error("Invalid response format");
           }
@@ -38,25 +43,28 @@ export function AccountTable() {
           return data.properties.rows;
         };
 
-        const calculateLast8Months = () => {
+        const calculateLast4Months = () => {
           const today = dayjs();
           const months = [];
           for (let i = 4; i >= 1; i--) {
             const startOfMonth = today.subtract(i, "month").startOf("month");
             const endOfMonth = today.subtract(i, "month").endOf("month");
             months.push({
-              from: startOfMonth.format("YYYY-MM-DD"),
-              to: endOfMonth.format("YYYY-MM-DD"),
+              from: startOfMonth.format("YYYYMMDD"), // Correct format
+              to: endOfMonth.format("YYYYMMDD"), // Correct format
               month: startOfMonth.format("MMMM YYYY"),
             });
           }
           return months;
         };
 
-        const monthsData = calculateLast8Months();
+        const monthsData = calculateLast4Months();
         const allRows = await Promise.all(
           monthsData.map(async ({ from, to, month }) => {
             const rows = await fetchMonthData(from, to);
+            if (!rows || rows.length === 0) {
+              return { month, totalCost: 0 }; // Handle empty rows
+            }
             const totalCost = rows.reduce(
               (sum, [preTaxCost]) => sum + preTaxCost,
               0

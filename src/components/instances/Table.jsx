@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
 const TABLE_HEAD = [
+  "Instance ID",
   "Instance Name",
-  "Region",
-  "Category",
-  "Consumed Services",
+  "Resource Group",
+  "Quantity",
+  "Cost",
+  "INR",
   "Unit of Measure",
+  "Unit Price",
 ];
 
 const Table = ({ meterRegion }) => {
@@ -20,20 +23,21 @@ const Table = ({ meterRegion }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://4.213.167.72/swagger/api/Consumption/usage-details", {
-  method: "GET", // Explicitly specifying the method for clarity
-  headers: {
-    Accept: "*/*", // Standardizing the header key capitalization
-  },
-});
-
+        const response = await fetch(
+          "http://4.213.167.72/swagger/api/Consumption/usage-details",
+          {
+            method: "GET",
+            headers: {
+              Accept: "*/*",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        // Access the value array from the response
         setData(result.value || []);
       } catch (err) {
         setError(err.message);
@@ -42,16 +46,17 @@ const Table = ({ meterRegion }) => {
       }
     };
 
-    
-
     fetchData();
   }, []);
 
-  const filteredData = data.filter(item => {
-    if (!meterRegion) return true; // If no region specified, show all
-    return item.properties.meterRegion.toLowerCase().includes(meterRegion.toLowerCase());
+  const filteredData = data.filter((item) => {
+    if (!meterRegion) return true;
+    return (
+      item.properties.meterRegion &&
+      item.properties.meterRegion.toLowerCase().includes(meterRegion.toLowerCase())
+    );
   });
-  
+
   const currentItems = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -60,20 +65,6 @@ const Table = ({ meterRegion }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [meterRegion]);
-
-  const handleNextPage = () => {
-    if (currentPage < Math.ceil(filteredData.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  
 
   if (loading) {
     return (
@@ -102,7 +93,7 @@ const Table = ({ meterRegion }) => {
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
-                <th key={head} className="border-b border-gray-300 pb-4 pt-10">
+                <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-6">
                   <Typography
                     variant="small"
                     color="blue-gray"
@@ -125,24 +116,16 @@ const Table = ({ meterRegion }) => {
                     <Typography
                       variant="small"
                       color="blue-gray"
-                      className="font-bold max-w-[100px] truncate"
-                      title={item.properties.instanceName} // Shows full text on hover
+                      className="font-bold"
                     >
-                      {item.properties.instanceName.slice(23, 39)}...
+                      {item.properties.meterId}
                     </Typography>
                   </td>
                   <td className={classes}>
                     <Typography
                       variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.meterRegion}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
+                      color="blue-gray"
+                      className="font-bold"
                     >
                       {item.properties.meterCategory}
                     </Typography>
@@ -152,7 +135,31 @@ const Table = ({ meterRegion }) => {
                       variant="small"
                       className="font-normal text-gray-600"
                     >
-                      {item.properties.consumedService}
+                      {item.properties.resourceGroup}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      className="font-normal text-gray-600"
+                    >
+                      {item.properties.quantity}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      className="font-normal text-gray-600"
+                    >
+                      {item.properties.paygCostInBillingCurrency}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      className="font-normal text-gray-600"
+                    >
+                      {item.properties.billingCurrencyCode}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -161,6 +168,14 @@ const Table = ({ meterRegion }) => {
                       className="font-normal text-gray-600"
                     >
                       {item.properties.unitOfMeasure}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      className="font-normal text-gray-600"
+                    >
+                      {item.properties.unitPrice}
                     </Typography>
                   </td>
                 </tr>
@@ -172,52 +187,7 @@ const Table = ({ meterRegion }) => {
 
       <div className="w-full flex items-center justify-center my-4">
         <div className="flex items-center gap-8">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            type="button"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
-          <p className="text-slate-600">
-            Page <strong className="text-slate-800">{currentPage}</strong> of{" "}
-            <strong className="text-slate-800">
-              {Math.ceil(filteredData.length / itemsPerPage)}
-            </strong>
-          </p>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
-            className="rounded-md border border-slate-300 p-2.5 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            type="button"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+          {/* Pagination Buttons */}
         </div>
       </div>
     </Card>
