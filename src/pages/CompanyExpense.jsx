@@ -95,7 +95,7 @@ const CompanyExpense = () => {
         Go to Accounting Catalog
       </div>
       <div className="mt-6 flex-1">
-        <AccountTable />
+        {/* <AccountTable /> */}
       </div>
     </div>
   </div>

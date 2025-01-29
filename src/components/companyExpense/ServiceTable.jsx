@@ -1,7 +1,8 @@
 import { Card, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 
-const TABLE_HEAD = ["Date", "Expense", "Service"]; // Adjusted column order
+// const TABLE_HEAD = ["Date", "Expense", "Service"]; // Adjusted column order
+const TABLE_HEAD = ["Expense", "Service"]; // Adjusted column order
 
 export function ServiceTable({ date }) {
   const [tableRows, setTableRows] = useState([]);
@@ -105,7 +106,7 @@ export function ServiceTable({ date }) {
                   return (
                     <tr key={index} className="hover:bg-gray-50">
                       {/* Date */}
-                      <td className={classes}>
+                      {/* <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -113,7 +114,7 @@ export function ServiceTable({ date }) {
                         >
                           {formatDate(usageDate)}
                         </Typography>
-                      </td>
+                      </td> */}
                       {/* Expense */}
                       <td className={classes}>
                         <Typography

@@ -52,7 +52,7 @@ const Table = ({ meterRegion }) => {
         setLoading(false);
       }
     };
-
+    console.log("api call")
     fetchData();
   }, []);
 
@@ -109,7 +109,7 @@ const Table = ({ meterRegion }) => {
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
-                <th key={head} className="border-b border-gray-300 pb-4 pt-10">
+                <th key={head} className="border-b border-gray-300 pb-4 pt-10 p-6">
                   <Typography className="font-bold leading-none text-center text-gray-700">
                     {head}
                   </Typography>

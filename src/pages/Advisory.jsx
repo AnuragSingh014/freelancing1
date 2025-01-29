@@ -51,7 +51,7 @@ const Advisory = () => {
       {/* box 1 */}
       <Box1 />
       {/* savings */}
-      <Savings />
+      {/* <Savings /> */}
 
       {/* table */}
       <Table meterRegion={meterRegion} />

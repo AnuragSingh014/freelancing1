@@ -1,7 +1,7 @@
 import { Card, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 
-const TABLE_HEAD = ["Date", "PreTax Cost"];
+const TABLE_HEAD = ["Date", "Cost"];
 
 export function ResourceTable({ resourceGroup, date }) {
   const [tableRows, setTableRows] = useState([]);
