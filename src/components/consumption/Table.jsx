@@ -22,7 +22,7 @@ const Table = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://4.213.167.72/swagger/api/Consumption/Advisory",
+          "https://vsndirect.com/swagger/api/Consumption/Advisory",
           {
             method: "GET",
             headers: {
@@ -41,17 +41,16 @@ const Table = () => {
         console.log('Full API Response:', result);
 
         // Defensive mapping with optional chaining
-        const filteredData = result.value.map((item) => {
-          console.log('Individual Item:', item);
-          return {
-            sku: item.properties?.extendedProperties?.sku ?? 'N/A',
-            commitment: item.properties?.extendedProperties?.commitment ?? 'N/A',
-            annualSavingsAmount: item.properties?.extendedProperties?.annualSavingsAmount ?? 'N/A',
-            savingsAmount: item.properties?.extendedProperties?.savingsAmount ?? 'N/A',
-            term: item.properties?.extendedProperties?.term ?? 'N/A',
-            lookbackPeriod: item.properties?.extendedProperties?.lookbackPeriod ?? 'N/A'
-          };
-        });
+            const filteredData = result.value
+      .map((item) => ({
+        sku: item.properties?.extendedProperties?.sku ?? 'N/A',
+        commitment: item.properties?.extendedProperties?.commitment ?? 'N/A',
+        annualSavingsAmount: item.properties?.extendedProperties?.annualSavingsAmount ?? 'N/A',
+        savingsAmount: item.properties?.extendedProperties?.savingsAmount ?? 'N/A',
+        term: item.properties?.extendedProperties?.term ?? 'N/A',
+        lookbackPeriod: item.properties?.extendedProperties?.lookbackPeriod ?? 'N/A'
+      }))
+      .filter(item => item.sku !== 'N/A'); 
 
         setData(filteredData);
       } catch (err) {

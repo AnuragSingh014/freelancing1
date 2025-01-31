@@ -7,49 +7,69 @@ const TABLE_HEAD = ["Expense", "Service"]; // Adjusted column order
 export function ServiceTable({ date }) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(null); // Add state for error handling
+  
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://4.213.167.72/swagger/api/Consumption/CostManagementServiceBy",
-          {
-            method: "GET",
-            headers: {
-              Accept: "*/*",
-            },
+      let retryCount = 0;
+      const maxRetries = 10;
+      let success = false;
+  
+      while (retryCount < maxRetries && !success) {
+        try {
+          const response = await fetch(
+            "https://vsndirect.com/swagger/api/Consumption/CostManagementServiceBy",
+            {
+              method: "GET",
+              headers: {
+                Accept: "*/*",
+              },
+            }
+          );
+  
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        );
-
-        const data = await response.json();
-
-        // Process all rows
-        const rows = data.properties.rows.map(
-          ([preTaxCost, usageDate, serviceName]) => ({
-            preTaxCost,
-            usageDate,
-            serviceName,
-          })
-        );
-
-        // Convert the selected date to YYYYMMDD format for comparison
-        const selectedDate = date ? formatDateToNumber(date) : null;
-
-        // Filter rows only if a date is specified
-        const filteredRows = selectedDate
-          ? rows.filter(({ usageDate }) => usageDate === selectedDate)
-          : rows;
-
-        setTableRows(filteredRows);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
+  
+          const data = await response.json();
+  
+          // Process all rows
+          const rows = data.properties.rows.map(
+            ([preTaxCost, usageDate, serviceName]) => ({
+              preTaxCost,
+              usageDate,
+              serviceName,
+            })
+          );
+  
+          // Convert the selected date to YYYYMMDD format for comparison
+          const selectedDate = date ? formatDateToNumber(date) : null;
+  
+          // Filter rows only if a date is specified
+          const filteredRows = selectedDate
+            ? rows.filter(({ usageDate }) => usageDate === selectedDate)
+            : rows;
+  
+          setTableRows(filteredRows);
+          setLoading(false);
+          success = true; // Mark the request as successful
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setError(error);
+          retryCount++;
+          if (retryCount < maxRetries) {
+            console.log(`Retrying... attempt ${retryCount + 1}`);
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+          } else {
+            setLoading(false);
+          }
+        }
       }
     };
-
+  
     fetchData();
   }, [date]); // Re-fetch when date changes
+  
 
   // Helper function to convert Date object to YYYYMMDD number format
   const formatDateToNumber = (dateObj) => {
@@ -106,7 +126,7 @@ export function ServiceTable({ date }) {
                   return (
                     <tr key={index} className="hover:bg-gray-50">
                       {/* Date */}
-                      {/* <td className={classes}>
+                      <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -114,7 +134,7 @@ export function ServiceTable({ date }) {
                         >
                           {formatDate(usageDate)}
                         </Typography>
-                      </td> */}
+                      </td>
                       {/* Expense */}
                       <td className={classes}>
                         <Typography

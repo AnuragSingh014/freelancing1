@@ -24,7 +24,7 @@ const Table = ({ meterRegion }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://4.213.167.72/swagger/api/Consumption/usage-details",
+          "https://vsndirect.com/swagger/api/Consumption/usage-details",
           {
             method: "GET",
             headers: {

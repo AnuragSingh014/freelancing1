@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { se } from "date-fns/locale";
 
 const CompanyExpense = () => {
-  const [selectedMenuItem, setSelectedMenuItem] = useState("dashboards");
+  const [selectedMenuItem, setSelectedMenuItem] = useState("mis-uat");
   const [selectedDate, setSelectedDate] = useState(null); // State for the selected date
 
   const handleMenuItemChange = (menuItem) => {
@@ -95,7 +95,7 @@ const CompanyExpense = () => {
         Go to Accounting Catalog
       </div>
       <div className="mt-6 flex-1">
-        {/* <AccountTable /> */}
+        <AccountTable />
       </div>
     </div>
   </div>

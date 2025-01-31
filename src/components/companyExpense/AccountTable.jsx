@@ -12,20 +12,20 @@ export function AccountTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchMonthData = async (from, to) => {
-          const fromFormatted = dayjs(from).format("YYYYMMDD");
-          const toFormatted = dayjs(to).format("YYYYMMDD");
+        const fetchMonthData = async (from, to, month) => {
+          const fromFormatted = encodeURIComponent(dayjs(from).format("YYYY/MM/DD"));
+          const toFormatted = encodeURIComponent(dayjs(to).format("YYYY/MM/DD"));
 
-          console.log("Fetching data for:", fromFormatted, toFormatted); // Debugging
+          console.log("Fetching data for:", month, fromFormatted, toFormatted); // Debugging
 
           const response = await fetch(
-            `http://4.213.167.72/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}`,
+            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}`,
             {
               method: "POST",
               headers: {
-                accept: "*/*",
+                Accept: "*/*",
               },
-              body: "",
+              body: null, // No request body needed
             }
           );
 
@@ -34,50 +34,74 @@ export function AccountTable() {
           }
 
           const data = await response.json();
-          console.log("API Response:", data); // Debugging
+          console.log(`API Response for ${month}:`, data); // Debugging
 
           if (!data.properties || !data.properties.rows) {
-            throw new Error("Invalid response format");
+            throw new Error(`Invalid response format for ${month}`);
           }
 
-          return data.properties.rows;
+          const rows = data.properties.rows;
+          const totalCost = rows.reduce((sum, [preTaxCost]) => sum + preTaxCost, 0);
+
+          return { month, totalCost };
         };
 
-        const calculateLast4Months = () => {
+        const calculateLast5Months = () => {
           const today = dayjs();
           const months = [];
-          for (let i = 4; i >= 1; i--) {
+
+          for (let i = 5; i >= 1; i--) {
             const startOfMonth = today.subtract(i, "month").startOf("month");
             const endOfMonth = today.subtract(i, "month").endOf("month");
             months.push({
-              from: startOfMonth.format("YYYYMMDD"), // Correct format
-              to: endOfMonth.format("YYYYMMDD"), // Correct format
+              from: startOfMonth.format("YYYY/MM/DD"),
+              to: endOfMonth.format("YYYY/MM/DD"),
               month: startOfMonth.format("MMMM YYYY"),
             });
           }
+
           return months;
         };
 
-        const monthsData = calculateLast4Months();
-        const allRows = await Promise.all(
-          monthsData.map(async ({ from, to, month }) => {
-            const rows = await fetchMonthData(from, to);
-            if (!rows || rows.length === 0) {
-              return { month, totalCost: 0 }; // Handle empty rows
+        // Get last 5 months
+        const monthsData = calculateLast5Months();
+
+        // Add December 2024 manually (for given API date range)
+        // monthsData.push({
+        //   from: "2024/12/01",
+        //   to: "2024/12/03",
+        //   month: "December 2024",
+        // });
+
+        const allRows = [];
+
+        // Retry up to 10 times for each month
+        for (const { from, to, month } of monthsData) {
+          let attempt = 0;
+          let monthData = null;
+
+          // Retry logic
+          while (attempt < 10 && !monthData) {
+            try {
+              monthData = await fetchMonthData(from, to, month);
+              allRows.push(monthData); // Only add if data is valid
+            } catch (err) {
+              console.error(`Error fetching data for ${month} (Attempt ${attempt + 1}): ${err.message}`);
+              attempt++;
+              if (attempt === 10) {
+                console.log(`Skipping ${month} after 10 failed attempts.`);
+              }
+              // Wait for a short period before retrying (optional, can be adjusted)
+              await new Promise((resolve) => setTimeout(resolve, 1000)); 
             }
-            const totalCost = rows.reduce(
-              (sum, [preTaxCost]) => sum + preTaxCost,
-              0
-            );
-            return { month, totalCost };
-          })
-        );
+          }
+        }
 
         setTableRows(allRows);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -110,34 +134,20 @@ export function AccountTable() {
               </tr>
             </thead>
             <tbody>
-              {tableRows.map(({ month, totalCost }, index) => {
-                const isLast = index === tableRows.length - 1;
-                const classes = isLast
-                  ? "py-4"
-                  : "py-4 border-b border-gray-300";
-
-                return (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-bold"
-                      >
-                        {month}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        className="font-normal text-gray-600"
-                      >
-                        ₹{totalCost.toFixed(2)}
-                      </Typography>
-                    </td>
-                  </tr>
-                );
-              })}
+              {tableRows.map(({ month, totalCost }, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="py-4 border-b border-gray-300">
+                    <Typography variant="small" color="blue-gray" className="font-bold">
+                      {month}
+                    </Typography>
+                  </td>
+                  <td className="py-4 border-b border-gray-300">
+                    <Typography variant="small" className="font-normal text-gray-600">
+                      ₹{totalCost.toFixed(2)}
+                    </Typography>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}

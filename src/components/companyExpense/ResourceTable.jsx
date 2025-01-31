@@ -12,13 +12,7 @@ export function ResourceTable({ resourceGroup, date }) {
       try {
         console.log("component remounting");
         const response = await fetch(
-          `http://4.213.167.72/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "*/*",
-            },
-          }
+          `https://vsndirect.com/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}`
         );
         
         const data = await response.json();

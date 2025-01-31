@@ -10,7 +10,7 @@ const Box1 = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://4.213.167.72/swagger/api/Consumption/Advisory",
+          "https://vsndirect.com/swagger/api/Consumption/Advisory",
           {
             method: "GET",
             headers: {

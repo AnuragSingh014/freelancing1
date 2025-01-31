@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
 
-
 const TABLE_HEAD = [
   "Role Name",
   "Current SKU",
@@ -25,14 +24,12 @@ const Table = ({ meterRegion }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://4.213.167.72/swagger/api/Consumption/Advisory", {
-          headers: { accept: "*/*" },
-        });
-
+        const response = await fetch("https://vsndirect.com/swagger/api/Consumption/Advisory");
+        https://vsndirect.com/swagger/swagger/index.html
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+        
         const result = await response.json();
         const transformedData = result.value.map((item) => ({
           roleName: item.properties?.extendedProperties?.roleName || "N/A",
@@ -44,7 +41,8 @@ const Table = ({ meterRegion }) => {
           maxTotalNetworkP95: `${item.properties?.extendedProperties?.MaxTotalNetworkP95 || "0"}%`,
           maxMemoryP95: `${item.properties?.extendedProperties?.MaxMemoryP95 || "0"}%`,
         }));
-
+        
+        console.log(transformedData);
         setData(transformedData);
       } catch (err) {
         setError(err.message);
@@ -52,13 +50,13 @@ const Table = ({ meterRegion }) => {
         setLoading(false);
       }
     };
-    console.log("api call")
+    
     fetchData();
   }, []);
 
   const filteredData = data.filter((item) => {
-    if (!meterRegion) return true;
-    return item.roleName.toLowerCase().includes(meterRegion.toLowerCase());
+    if (!meterRegion) return item.roleName !== "N/A";
+    return item.roleName !== "N/A" && item.roleName.toLowerCase().includes(meterRegion.toLowerCase());
   });
 
   const currentItems = filteredData.slice(
