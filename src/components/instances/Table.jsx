@@ -3,7 +3,7 @@ import { Card, Typography } from "@material-tailwind/react";
 
 const TABLE_HEAD = [
   "Instance ID",
-  "Instance Name",
+  "Name",
   "Resource Group",
   "Quantity",
   "Cost",
@@ -68,7 +68,7 @@ const Table = ({ meterRegion }) => {
 
   if (loading) {
     return (
-      <Card className="h-full w-full p-6">
+      <Card className="h-full w-full p-6 bg-blue">
         <div className="flex items-center justify-center h-64">
           <Typography className="text-gray-600">Loading...</Typography>
         </div>
@@ -87,7 +87,7 @@ const Table = ({ meterRegion }) => {
   }
 
   return (
-    <Card className="h-full w-full overflow-hidden px-6">
+    <Card className="h-full w-full overflow-hidden px-6 p-4">
       <div className="overflow-x-auto">
         <table className="w-full min-w-max table-auto text-left">
           <thead>
@@ -106,82 +106,58 @@ const Table = ({ meterRegion }) => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((item, index) => {
-              const isLast = index === currentItems.length - 1;
-              const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
+  {currentItems.map((item, index) => {
+    const isLast = index === currentItems.length - 1;
+    const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
+    const rowColor = index % 2 === 0 ? "bg-blue-100" : "bg-gray-100";
 
-              return (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-bold"
-                    >
-                      {item.properties.meterId}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-bold"
-                    >
-                      {item.properties.meterCategory}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.resourceGroup}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.quantity}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.paygCostInBillingCurrency}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.billingCurrencyCode}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.unitOfMeasure}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-gray-600"
-                    >
-                      {item.properties.unitPrice}
-                    </Typography>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+    return (
+      <tr key={item.id} className={`${rowColor} hover:bg-gray-50`}>
+        <td className={classes}>
+          <Typography variant="small" color="blue-gray" className="font-bold">
+            {item.properties.meterId}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" color="blue-gray" className="font-bold">
+            {item.properties.meterCategory}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.resourceGroup}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.quantity}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.paygCostInBillingCurrency}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.billingCurrencyCode}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.unitOfMeasure}
+          </Typography>
+        </td>
+        <td className={classes}>
+          <Typography variant="small" className="font-normal text-gray-600">
+            {item.properties.unitPrice}
+          </Typography>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
         </table>
       </div>
 

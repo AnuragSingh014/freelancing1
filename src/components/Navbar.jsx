@@ -19,10 +19,11 @@ import { NavLink, Link } from "react-router";
 
 export function Navbar() {
   return (
-    <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    // <Card className="bg-blue-100 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    <Card className="bg-blue-100 h-full w-full max-w-[14rem] p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
-        <Typography variant="h5" color="blue-gray">
-          Sidebar
+        <Typography variant="h5" color="blue-gray flex items-center justify-center">
+          <img src="/freelancinglogo.png" className="h-[16vh] ml-6" />
         </Typography>
       </div>
       <List>

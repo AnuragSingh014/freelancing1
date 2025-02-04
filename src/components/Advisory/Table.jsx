@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
-
 const TABLE_HEAD = [
   "Role Name",
   "Current SKU",
@@ -25,7 +24,6 @@ const Table = ({ meterRegion }) => {
       try {
         setLoading(true);
         const response = await fetch("https://vsndirect.com/swagger/api/Consumption/Advisory");
-        https://vsndirect.com/swagger/swagger/index.html
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -42,7 +40,6 @@ const Table = ({ meterRegion }) => {
           maxMemoryP95: `${item.properties?.extendedProperties?.MaxMemoryP95 || "0"}%`,
         }));
         
-        console.log(transformedData);
         setData(transformedData);
       } catch (err) {
         setError(err.message);
@@ -68,21 +65,9 @@ const Table = ({ meterRegion }) => {
     setCurrentPage(1);
   }, [meterRegion]);
 
-  const handleNextPage = () => {
-    if (currentPage < Math.ceil(filteredData.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
   if (loading) {
     return (
-      <Card className="h-full w-full p-6">
+      <Card className="h-full w-full p-6 bg-blue">
         <div className="flex items-center justify-center h-64">
           <Typography className="text-gray-600">Loading...</Typography>
         </div>
@@ -101,13 +86,13 @@ const Table = ({ meterRegion }) => {
   }
 
   return (
-    <Card className="h-full w-full overflow-hidden px-6">
+    <Card className="h-full w-full overflow-hidden px-6 p-4">
       <div className="overflow-x-auto">
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
-                <th key={head} className="border-b border-gray-300 pb-4 pt-10 p-6">
+                <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-6">
                   <Typography className="font-bold leading-none text-center text-gray-700">
                     {head}
                   </Typography>
@@ -119,78 +104,23 @@ const Table = ({ meterRegion }) => {
             {currentItems.map((item, index) => {
               const isLast = index === currentItems.length - 1;
               const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
-
+              const rowColor = index % 2 === 0 ? "bg-blue-100" : "bg-gray-100";
+              
               return (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className={classes}>
-                    <Typography className="font-normal">
-                      {item.roleName}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography className="font-normal">
-                      {item.currentSku}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography className="font-normal">
-                      {item.targetSku}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-right`}>
-                    <Typography className="font-normal">
-                      {item.savingsAmount}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-right`}>
-                    <Typography className="font-normal">
-                      {item.annualSavingsAmount}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-center`}>
-                    <Typography className="font-normal">
-                      {item.maxCpuP95}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-center`}>
-                    <Typography className="font-normal">
-                      {item.maxTotalNetworkP95}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-center`}>
-                    <Typography className="font-normal">
-                      {item.maxMemoryP95}
-                    </Typography>
-                  </td>
+                <tr key={index} className={`${rowColor} hover:bg-gray-50`}>
+                  <td className={classes}><Typography>{item.roleName}</Typography></td>
+                  <td className={classes}><Typography>{item.currentSku}</Typography></td>
+                  <td className={classes}><Typography>{item.targetSku}</Typography></td>
+                  <td className={classes}><Typography>{item.savingsAmount}</Typography></td>
+                  <td className={classes}><Typography>{item.annualSavingsAmount}</Typography></td>
+                  <td className={classes}><Typography>{item.maxCpuP95}</Typography></td>
+                  <td className={classes}><Typography>{item.maxTotalNetworkP95}</Typography></td>
+                  <td className={classes}><Typography>{item.maxMemoryP95}</Typography></td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-      </div>
-
-      <div className="w-full flex items-center justify-center my-4">
-        <div className="flex items-center gap-8">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm transition-all hover:bg-gray-100 disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          <p className="text-sm text-gray-600">
-            Page {currentPage} of {Math.ceil(filteredData.length / itemsPerPage)}
-          </p>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm transition-all hover:bg-gray-100 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
       </div>
     </Card>
   );

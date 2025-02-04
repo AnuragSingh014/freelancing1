@@ -12,16 +12,19 @@ export function MenuListDropDown({ onChange, name }) {
   };
 
   return (
-    <Menu className="border-0 bg-orange-500">
+    <Menu className="border-0">
       <MenuHandler 
         style={{ outline: 'none' }} 
-        className="border-0 font-medium text-sm normal-case shadow-none hover:shadow-none hover:border-none bg-orange-500 text-black p-0 w-full"
+        className="border-0 font-medium text-sm normal-case shadow-none hover:shadow-none hover:border-none bg-orange-300 text-black p-0 ml-2"
       >
         <Button
-          className="normal-case flex flex-row items-center border-0 bg-orange-500 w-full"
+          className="normal-case flex flex-row items-center border-0 ml-2"
           style={{ fontSize: "0.875rem", fontWeight: "500", outline: 'none' }}
         >
-          {name}
+         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+ 
         </Button>
       </MenuHandler>
       <MenuList 
@@ -49,3 +52,5 @@ export function MenuListDropDown({ onChange, name }) {
     </Menu>
   );
 }
+
+

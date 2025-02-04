@@ -39,12 +39,12 @@ const Instances = () => {
             />
           </div>
           <button 
-            className="bg-green-400 p-1 rounded-md"
+            className="border-md border-gray-400 border-[0.1px] p-1 rounded-md"
             onClick={handleApply}
           > 
             Apply
           </button>
-          <button className="bg-green-500 p-1 rounded-md">Snooze all</button>
+          <button className="border-md border-gray-400 border-[0.1px] p-1 rounded-md">Snooze all</button>
         </div>
       </div>
 

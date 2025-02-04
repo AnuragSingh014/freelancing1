@@ -1,106 +1,130 @@
-import React, { useState } from "react";
+// CompanyExpense.jsx
+import React, { useState, useEffect } from "react";
 import SearchBox from "../components/instances/SearchBox";
 import { MenuListDropDown } from "../components/MenuListDropDown";
 import { ServiceTable } from "../components/companyExpense/ServiceTable";
 import { ResourceTable } from "../components/companyExpense/ResourceTable";
 import { AccountTable } from "../components/companyExpense/AccountTable";
-import DatePicker from "../components/companyExpense/DatePicker";
-import { useEffect } from "react";
-import { se } from "date-fns/locale";
+import CompanyChart from "../components/companyExpense/CompanyChart";
+
+const monthsData = [
+  { display: "May 24", value: "0524" },
+  { display: "Jun 24", value: "0624" },
+  { display: "Jul 24", value: "0724" },
+  { display: "Aug 24", value: "0824" },
+  { display: "Sep 24", value: "0924" },
+  { display: "Oct 24", value: "1024" },
+  { display: "Nov 24", value: "1124" },
+  { display: "Dec 24", value: "1224" },
+  { display: "Jan 25", value: "0125" },
+  { display: "Feb 25", value: "0225" },
+  { display: "Mar 25", value: "0325" },
+  { display: "Apr 25", value: "0425" }
+];
 
 const CompanyExpense = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState("mis-uat");
-  const [selectedDate, setSelectedDate] = useState(null); // State for the selected date
+  const [selectedMonthYear, setSelectedMonthYear] = useState("0125");
 
   const handleMenuItemChange = (menuItem) => {
     setSelectedMenuItem(menuItem);
   };
 
-  const formatDate = (rawDate) => {
-    const year = Math.floor(rawDate / 10000);
-    const month = Math.floor((rawDate % 10000) / 100);
-    const day = rawDate % 100;
-    return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`; // Format: YYYY-MM-DD
-  };
-
-  
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    console.log(date);
+  const handleMonthYearChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedMonthYear(selectedValue);
   };
 
   const handleApply = () => {
     console.log("Applying filter for:", selectedMenuItem);
-    console.log("Selected Date:", selectedDate); // Log the selected date here
+    console.log("Selected Month-Year:", selectedMonthYear);
   };
 
   useEffect(() => {
     console.log("Selected Menu Item:", selectedMenuItem);
-  }, [selectedMenuItem,selectedDate]);
+    console.log("Selected Month-Year:", selectedMonthYear);
+  }, [selectedMenuItem, selectedMonthYear]);
 
   return (
     <div className="p-4">
-  {/* Heading */}
-  <div className="flex flex-row items-center justify-between">
-    <div className="pl-5">
-      <div className="text-3xl font-medium">Company Expense Summary</div>
-      <div className="flex gap-1 mt-3">
-        <div className="text-sm"> Summary &gt;</div>
-        <div className="text-sm"> Expense Summary &gt;</div>
-      </div>
-    </div>
+      {/* Heading */}
 
-    <div className="flex flex-row gap-1.5 items-end">
-      <div>
-        <div className="text-sm">Time Filter</div>
-        <DatePicker date={selectedDate} onDateChange={handleDateChange} /> {/* Pass state and handler */}
-      </div>
-      <button className="bg-green-400 py-[8px] px-[12px] rounded-md" onClick={handleApply}>
-        Apply
-      </button>
-      <button className="bg-green-500 p-1 rounded-md py-[8px] px-[12px]">Snooze all</button>
-    </div>
-  </div>
+      
 
-  {/* Three Equal-Height Boxes */}
-  <div className="flex w-full mt-16 gap-4">
-    {/* Go to Service Catalog */}
-    <div className="w-[32%] flex flex-col">
-      <div className="flex-1 text-center py-[1.9rem] rounded-md text-xl px-4 bg-blue-gray-200">
-        Go to Service Catalog
-      </div>
-      <div className="mt-6 flex-1">
-        <ServiceTable date={selectedDate} />
-      </div>
-    </div>
+      <div className="flex flex-row items-center justify-between mt-4">
+        <div className="pl-5">
+          <div className="text-3xl font-medium">Company Expense Summary</div>
+          <div className="flex gap-1 mt-3">
+            <div className="text-sm"> Summary &gt;</div>
+            <div className="text-sm"> Expense Summary &gt;</div>
+          </div>
+        </div>
 
-    {/* Go to Resource Catalog */}
-    <div className="w-[32%] flex flex-col">
-      <div className="flex-1 flex text-center rounded-md text-xl p-4 bg-orange-300">
-        <span>Go to Resource Catalog </span>
-        <MenuListDropDown
-          name={selectedMenuItem}
-          className="text-black m-0 bg-orange-500 rounded-md text-xl"
-          onChange={handleMenuItemChange}
-        />
-      </div>
-      <div className="mt-6 flex-1">
-        <ResourceTable resourceGroup={selectedMenuItem} date={selectedDate} />
-      </div>
-    </div>
+      
 
-    {/* Go to Accounting Catalog */}
-    <div className="w-[32%] flex flex-col">
-      <div className="flex-1 text-center rounded-md text-xl px-4 py-[1.9rem] bg-purple-300">
-        Go to Accounting Catalog
+        <div className="flex flex-row gap-1.5 items-end">
+          <div>
+            <div className="text-sm">Time Filter</div>
+            <select
+              value={selectedMonthYear}
+              onChange={handleMonthYearChange}
+              className="p-2 border rounded-md"
+            >
+              {monthsData.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.display}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button className="bg-green-400 py-2 px-3 rounded-md" onClick={handleApply}>
+            Apply
+          </button>
+          <button className="bg-green-500 py-2 px-3 rounded-md">Snooze all</button>
+        </div>
       </div>
-      <div className="mt-6 flex-1">
-        <AccountTable />
+      <div className="mt-4 ">
+        <CompanyChart />
       </div>
+      {/* Three Equal-Height Boxes */}
+      <div className="flex w-full mt-16 gap-4">
+        {/* Go to Service Catalog */}
+        <div className="w-1/3 flex flex-col">
+          <div className="flex-1 text-center py-8 rounded-md text-xl px-4 bg-blue-200">
+            Service Cost
+          </div>
+          <div className="mt-6 flex-1">
+            <ServiceTable date={selectedMonthYear} />
+          </div>
+        </div>
+
+        {/* Go to Resource Catalog */}
+        <div className="w-1/3 flex flex-col">
+          <div className=" flex text-center rounded-md text-xl px-4 py-8 bg-orange-300">
+            <div className="">Resource Cost </div>
+            <MenuListDropDown
+              name={selectedMenuItem}
+              className="text-black m-0 bg-orange-500 rounded-md text-xl"
+              onChange={handleMenuItemChange}
+            />
+          </div>
+          <div className="mt-6 flex-1">
+            <ResourceTable resourceGroup={selectedMenuItem} date={selectedMonthYear} />
+          </div>
+        </div>
+
+        {/* Go to Accounting Catalog */}
+        <div className="w-1/3 flex flex-col">
+          <div className=" text-center rounded-md text-xl px-4 py-8 bg-purple-300">
+            Subscription cost
+          </div>
+          <div className="mt-6 flex-1 h-screen">
+            <AccountTable date={selectedMonthYear} className="min-h-screen"/>
+          </div>
+        </div>
+      </div>
+      
     </div>
-  </div>
-</div>
-    
   );
 };
 
