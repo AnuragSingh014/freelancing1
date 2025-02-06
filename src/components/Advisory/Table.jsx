@@ -86,14 +86,14 @@ const Table = ({ meterRegion }) => {
   }
 
   return (
-    <Card className="h-full w-full overflow-hidden px-6 p-4">
+    <Card className="h-full w-full overflow-hidden p-4">
       <div className="overflow-x-auto">
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
                 <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-6">
-                  <Typography className="font-bold leading-none text-center text-gray-700">
+                  <Typography className="font-bold leading-none  text-gray-700">
                     {head}
                   </Typography>
                 </th>
@@ -103,7 +103,7 @@ const Table = ({ meterRegion }) => {
           <tbody>
             {currentItems.map((item, index) => {
               const isLast = index === currentItems.length - 1;
-              const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
+              const classes = isLast ? "py-4 px-6" : "px-6 py-4 border-b border-gray-300";
               const rowColor = index % 2 === 0 ? "bg-blue-100" : "bg-gray-100";
               
               return (
