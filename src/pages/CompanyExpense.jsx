@@ -22,7 +22,7 @@ const monthsData = [
   { display: "Apr 25", value: "0425" }
 ];
 
-const CompanyExpense = () => {
+const CompanyExpense = ({selectedCompany}) => {
   const [selectedMenuItem, setSelectedMenuItem] = useState("mis-uat");
   const [selectedMonthYear, setSelectedMonthYear] = useState("0125");
 
@@ -57,6 +57,11 @@ const CompanyExpense = () => {
           <div className="flex gap-1 mt-3">
             <div className="text-sm"> Summary &gt;</div>
             <div className="text-sm"> Expense Summary &gt;</div>
+            <div>
+        {selectedCompany.name }
+         
+        
+        </div>
           </div>
         </div>
 
@@ -84,7 +89,7 @@ const CompanyExpense = () => {
         </div>
       </div>
       <div className="mt-4 ">
-        <CompanyChart />
+        <CompanyChart selectedCompany={selectedCompany}/>
       </div>
       {/* Three Equal-Height Boxes */}
       <div className="flex w-full mt-16 gap-4">
@@ -94,13 +99,13 @@ const CompanyExpense = () => {
             Service Cost
           </div>
           <div className="mt-6 flex-1">
-            <ServiceTable date={selectedMonthYear} />
+            <ServiceTable date={selectedMonthYear} selectedCompany={selectedCompany}/>
           </div>
         </div>
 
         {/* Go to Resource Catalog */}
         <div className="w-1/3 flex flex-col">
-          <div className=" flex text-center rounded-md text-xl px-4 py-8 bg-orange-300">
+          <div className=" flex text-center items-center justify-center rounded-md text-xl px-4 py-8 bg-orange-300">
             <div className="">Resource Cost </div>
             <MenuListDropDown
               name={selectedMenuItem}
@@ -109,7 +114,7 @@ const CompanyExpense = () => {
             />
           </div>
           <div className="mt-6 flex-1">
-            <ResourceTable resourceGroup={selectedMenuItem} date={selectedMonthYear} />
+            <ResourceTable resourceGroup={selectedMenuItem} selectedCompany={selectedCompany} date={selectedMonthYear} />
           </div>
         </div>
 
@@ -119,7 +124,7 @@ const CompanyExpense = () => {
             Subscription cost
           </div>
           <div className="mt-6 flex-1 h-screen">
-            <AccountTable date={selectedMonthYear} className="min-h-screen"/>
+            <AccountTable date={selectedMonthYear} selectedCompany={selectedCompany} className="min-h-screen"/>
           </div>
         </div>
       </div>

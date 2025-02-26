@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Box1 = () => {
+const Box1 = ({selectedCompany}) => {
   const [loading, setLoading] = useState(false);
   const [instanceSpend, setInstanceSpend] = useState(0);
   const [potentialSavings, setPotentialSavings] = useState(0);
@@ -10,7 +10,7 @@ const Box1 = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://vsndirect.com/swagger/api/Consumption/Advisory",
+          `https://vsndirect.com/swagger/api/Consumption/Advisory?ClientId=${selectedCompany.id}`,
           {
             method: "GET",
             headers: {

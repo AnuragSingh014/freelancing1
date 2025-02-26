@@ -1,15 +1,15 @@
 import React from "react";
 import { Pamplet } from "../components/summary/Card";
-import { MenuListDropDown } from "../components/MenuListDropDown";
+import { CompanyDropdown } from "../components/CompanyDropdown"
 
-const Summary = () => {
+const Summary = ({ onCompanyChange, selectedCompany }) => {
   return (
     <div className="p-4">
       <div className=" pl-5">
         <div className="text-3xl font-medium">Summary</div>
         <div className="flex gap-1 mt-3">
           <div className="text-sm"> Summary &gt;</div>
-          {/* <MenuListDropDown className="text-black p-0 m-0"/> */}
+          <CompanyDropdown className="text-black p-0 m-0" onChange={onCompanyChange} selectedCompany={selectedCompany} />
         </div>
       </div>
       <div className="flex gap-1 mt-6">

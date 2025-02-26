@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const TABLE_HEAD = ["Service", "Total Cost"];
 
-export function ServiceTable({ date }) {
+export function ServiceTable({ date,selectedCompany }) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,7 +42,7 @@ export function ServiceTable({ date }) {
       while (retryCount < maxRetries && !success) {
         try {
           const response = await fetch(
-            "https://vsndirect.com/swagger/api/Consumption/CostManagementServiceBy",
+            `https://vsndirect.com/swagger/api/Consumption/CostManagementServiceBy?ClientId=${selectedCompany.id}`,
             {
               method: "GET",
               headers: {

@@ -19,8 +19,7 @@ import { NavLink, Link } from "react-router";
 
 export function Navbar() {
   return (
-    // <Card className="bg-blue-100 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-    <Card className="bg-blue-100 h-full w-full max-w-[14rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    <Card className="flex-1 bg-inherit rounded-none shadow-none border-none h-[100vh] w-full max-w-[14rem] p-4">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray flex items-center justify-center">
           <img src="/freelancinglogo.png" className="h-[16vh] ml-6" />
@@ -29,7 +28,7 @@ export function Navbar() {
       <List>
 
       <Link to="/">
-        <ListItem>
+        <ListItem className="w-3/4">
           <ListItemPrefix>
             <PresentationChartBarIcon className="h-5 w-5" />
           </ListItemPrefix>
@@ -38,7 +37,7 @@ export function Navbar() {
         </Link>
 
         <Link to="/advisory">
-          <ListItem>
+          <ListItem className="w-3/4">
             <ListItemPrefix>
               <ShoppingBagIcon className="h-5 w-5" />
             </ListItemPrefix>
@@ -49,7 +48,7 @@ export function Navbar() {
         
 
         <Link to="/expense">
-          <ListItem>
+          <ListItem className="w-3/4">
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5" />
             </ListItemPrefix>
@@ -58,7 +57,7 @@ export function Navbar() {
         </Link>
 
         <Link to="/consumption">
-          <ListItem>
+          <ListItem className="w-3/4">
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5" />
             </ListItemPrefix>
@@ -67,8 +66,8 @@ export function Navbar() {
         </Link>
 
         <Link to="/instances">
-          <ListItem>
-            <ListItemPrefix>
+          <ListItem className="w-3/4">
+            <ListItemPrefix >
               <InboxIcon className="h-5 w-5" />
             </ListItemPrefix>
             Instances

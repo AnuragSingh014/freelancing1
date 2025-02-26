@@ -12,7 +12,7 @@ const TABLE_HEAD = [
   "Unit Price",
 ];
 
-const Table = ({ meterRegion }) => {
+const Table = ({ meterRegion,selectedCompany }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,7 +24,7 @@ const Table = ({ meterRegion }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://vsndirect.com/swagger/api/Consumption/usage-details",
+          `https://vsndirect.com/swagger/api/Consumption/usage-details?ClientId=${selectedCompany.id}`,
           {
             method: "GET",
             headers: {

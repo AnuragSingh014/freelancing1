@@ -12,7 +12,7 @@ const TABLE_HEAD = [
   "Max Memory P95"
 ];
 
-const Table = ({ meterRegion }) => {
+const Table = ({ meterRegion, selectedCompany }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,7 +23,11 @@ const Table = ({ meterRegion }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("https://vsndirect.com/swagger/api/Consumption/Advisory");
+        
+        let url = `https://vsndirect.com/swagger/api/Consumption/Advisory?ClientId=${selectedCompany.id}`;  
+        
+        const response = await fetch(url);
+        console.log(response)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -49,7 +53,8 @@ const Table = ({ meterRegion }) => {
     };
     
     fetchData();
-  }, []);
+    // console.log(url)
+  }, [selectedCompany]);
 
   const filteredData = data.filter((item) => {
     if (!meterRegion) return item.roleName !== "N/A";
@@ -87,7 +92,9 @@ const Table = ({ meterRegion }) => {
 
   return (
     <Card className="h-full w-full overflow-hidden p-4">
+      
       <div className="overflow-x-auto">
+        
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>

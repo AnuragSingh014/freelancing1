@@ -5,9 +5,9 @@ import Savings from "../components/instances/Savings";
 import Table from "../components/Advisory/Table";
 import Footer from "../components/instances/Footer";
 
-const Advisory = () => {
+const Advisory = ({selectedCompany}) => {
   const [meterRegion, setMeterRegion] = useState("");
-
+  // console.log(selectedCompany)
   const handleMeterRegionChange = (e) => {
     setMeterRegion(e.target.value);
   };
@@ -49,12 +49,12 @@ const Advisory = () => {
       </div>
 
       {/* box 1 */}
-      <Box1 />
+      {/* <Box1 /> */}
       {/* savings */}
       {/* <Savings /> */}
 
       {/* table */}
-      <Table meterRegion={meterRegion} />
+      <Table meterRegion={meterRegion} selectedCompany={selectedCompany} />
     </div>
   );
 };

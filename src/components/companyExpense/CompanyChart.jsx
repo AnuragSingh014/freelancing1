@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
 
-export default function CompanyChart() {
+export default function CompanyChart({selectedCompany}) {
   const [chartData, setChartData] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -18,7 +18,7 @@ export default function CompanyChart() {
           console.log("Fetching data for:", month, fromFormatted, toFormatted);
 
           const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}`,
+            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}?ClientId=${selectedCompany.id}`,
             {
               method: "POST",
               headers: { Accept: "*/*" },

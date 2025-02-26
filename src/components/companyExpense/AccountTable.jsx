@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 const TABLE_HEAD = ["Month", "Total Cost"];
 
-export function AccountTable() {
+export function AccountTable({selectedCompany}) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,7 @@ export function AccountTable() {
           console.log("Fetching data for:", month, fromFormatted, toFormatted); // Debugging
 
           const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}`,
+            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}?ClientId=${selectedCompany.id}`,
             {
               method: "POST",
               headers: {

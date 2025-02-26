@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const TABLE_HEAD = ["Resource", "Total Cost"];
 
-export function ResourceTable({ resourceGroup }) {
+export function ResourceTable({ resourceGroup,selectedCompany }) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,9 +23,9 @@ export function ResourceTable({ resourceGroup }) {
           console.log("Fetching data for resourceGroup:", resourceGroup);
 
           const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}`
+            `https://vsndirect.com/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}&ClientId=${selectedCompany.id}`
           );
-
+            console.log(response)
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -77,15 +77,15 @@ export function ResourceTable({ resourceGroup }) {
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className=" gap-1 w-[100%]">
                 {tableRows.map(({ resourceName, totalCost }, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-4 border-b border-gray-300">
+                    <td className=" border-b border-gray-300">
                       <Typography variant="small" color="blue-gray" className="font-normal">
                         {resourceName}
                       </Typography>
                     </td>
-                    <td className="py-4 border-b border-gray-300">
+                    <td className=" border-b border-gray-300">
                       <Typography variant="small" color="blue-gray" className="font-bold">
                         ₹{typeof totalCost === "number" ? totalCost.toFixed(2) : "Error Fetching Data"}
                       </Typography>

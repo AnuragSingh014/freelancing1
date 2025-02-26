@@ -5,7 +5,7 @@ import Savings from "../components/consumption/Savings";
 import Table from "../components/consumption/Table";
 
 
-const Consumption = () => {
+const Consumption = ({selectedCompany}) => {
   const [meterRegion, setMeterRegion] = useState("");
 
   const handleMeterRegionChange = (e) => {
@@ -49,12 +49,12 @@ const Consumption = () => {
       </div>
 
       {/* box 1 */}
-      <Box1 />
+      <Box1 selectedCompany={selectedCompany}/>
       {/* savings */}
       {/* <Savings /> */}
 
       {/* table */}
-      <Table meterRegion={meterRegion} />
+      <Table meterRegion={meterRegion} selectedCompany={selectedCompany}/>
     </div>
   );
 };

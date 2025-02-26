@@ -10,7 +10,7 @@ const TABLE_HEAD = [
   "Lookback Period"
 ];
 
-const Table = () => {
+const Table = ({selectedCompany}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +22,7 @@ const Table = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://vsndirect.com/swagger/api/Consumption/Advisory",
+          `https://vsndirect.com/swagger/api/Consumption/Advisory?ClientId=${selectedCompany.id}`,
           {
             method: "GET",
             headers: {
