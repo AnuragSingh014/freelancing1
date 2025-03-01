@@ -23,7 +23,7 @@ const Instances = ({selectedCompany}) => {
       <div className="flex flex-row items-center justify-between">
         <div className="text-3xl">Instances</div>
 
-        <div className="flex flex-row gap-1.5 items-end">
+        {/* <div className="flex flex-row gap-1.5 items-end">
           <div>
             <SearchBox />
           </div>
@@ -45,7 +45,7 @@ const Instances = ({selectedCompany}) => {
             Apply
           </button>
           <button className="border-md border-gray-400 border-[0.1px] p-1 rounded-md">Snooze all</button>
-        </div>
+        </div> */}
       </div>
 
       {/* box 1 */}

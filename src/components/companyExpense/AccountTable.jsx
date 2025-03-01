@@ -13,38 +13,37 @@ export function AccountTable({selectedCompany}) {
     const fetchData = async () => {
       try {
         const fetchMonthData = async (from, to, month) => {
-          const fromFormatted = encodeURIComponent(dayjs(from).format("YYYY/MM/DD"));
-          const toFormatted = encodeURIComponent(dayjs(to).format("YYYY/MM/DD"));
-
+          const fromFormatted = encodeURIComponent(dayjs(from).format("YYYY-MM-DD"));
+          const toFormatted = encodeURIComponent(dayjs(to).format("YYYY-MM-DD"));
+        
           console.log("Fetching data for:", month, fromFormatted, toFormatted); // Debugging
-
-          const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}?ClientId=${selectedCompany.id}`,
-            {
-              method: "POST",
-              headers: {
-                Accept: "*/*",
-              },
-              body: null, // No request body needed
-            }
-          );
-
+        
+          const url = `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}&ClientId=${selectedCompany.id}`;
+        
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              Accept: "*/*",
+            },
+          });
+        
           if (!response.ok) {
             throw new Error(`Error: ${response.status} ${response.statusText}`);
           }
-
+        
           const data = await response.json();
           console.log(`API Response for ${month}:`, data); // Debugging
-
+        
           if (!data.properties || !data.properties.rows) {
             throw new Error(`Invalid response format for ${month}`);
           }
-
+        
           const rows = data.properties.rows;
           const totalCost = rows.reduce((sum, [preTaxCost]) => sum + preTaxCost, 0);
-
+        
           return { month, totalCost };
         };
+        
 
         const calculateLast5Months = () => {
           const today = dayjs();

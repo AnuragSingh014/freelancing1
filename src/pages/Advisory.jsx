@@ -38,13 +38,13 @@ const Advisory = ({selectedCompany}) => {
               placeholder="Enter region"
             />
           </div>
-          <button 
+          {/* <button 
             className="bg-green-400 p-1 rounded-md"
             onClick={handleApply}
           > 
             Apply
           </button>
-          <button className="bg-green-500 p-1 rounded-md">Snooze all</button>
+          <button className="bg-green-500 p-1 rounded-md">Snooze all</button> */}
         </div>
       </div>
 

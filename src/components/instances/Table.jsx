@@ -87,13 +87,13 @@ const Table = ({ meterRegion,selectedCompany }) => {
   }
 
   return (
-    <Card className="h-full w-full overflow-hidden px-6 p-4">
+    <Card className="h-full w-full overflow-hidden  py-4">
       <div className="overflow-x-auto">
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
-                <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-6">
+                <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-2">
                   <Typography
                     variant="small"
                     color="blue-gray"
@@ -114,42 +114,42 @@ const Table = ({ meterRegion,selectedCompany }) => {
     return (
       <tr key={item.id} className={`${rowColor} hover:bg-gray-50`}>
         <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-bold">
+          <Typography variant="small" color="blue-gray" className="px-2 text-left *:font-bold">
             {item.properties.meterId}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-bold">
+          <Typography variant="small" color="blue-gray" className="px-2 font-bold">
             {item.properties.meterCategory}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.resourceGroup}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.quantity}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.paygCostInBillingCurrency}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.billingCurrencyCode}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.unitOfMeasure}
           </Typography>
         </td>
         <td className={classes}>
-          <Typography variant="small" className="font-normal text-gray-600">
+          <Typography variant="small" className="px-2 font-normal text-gray-600">
             {item.properties.unitPrice}
           </Typography>
         </td>

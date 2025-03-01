@@ -51,17 +51,17 @@ const Box1 = ({selectedCompany}) => {
 
   return (
     <div
-      className="w-full border-gray-300 mt-8 flex py-4"
+      className="w-full border-gray-300 mt-8 flex "
       style={{ borderWidth: "0.25px" }}
     >
-      <div className="w-1/2 flex flex-col items-center justify-center bg-blue-100">
+      <div className="w-1/2 flex flex-col items-center justify-center py-4 bg-blue-100">
         <div>savingsAmount</div>
         <div className="text-2xl font-semibold">
           {loading ? "Loading..." : `₹${83*instanceSpend.toFixed(2)}`}
         </div>
       </div>
       <div className="border-gray-200" style={{ borderWidth: "0.25px" }}></div>
-      <div className="w-1/2 flex flex-col items-center justify-center bg-gray-100">
+      <div className="w-1/2 flex flex-col items-center justify-center py-4 bg-gray-100">
         <div className="w-1/2 text-center">annualSavingsAmount</div>
         <div className="text-2xl font-semibold">
           {loading ? "Loading..." : `₹${83*potentialSavings.toFixed(2)}`}

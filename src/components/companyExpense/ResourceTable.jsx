@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const TABLE_HEAD = ["Resource", "Total Cost"];
 
-export function ResourceTable({ resourceGroup,selectedCompany }) {
+export function ResourceTable({ resourceGroup, selectedCompany }) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,43 +20,35 @@ export function ResourceTable({ resourceGroup,selectedCompany }) {
 
       while (retryCount < maxRetries && !success) {
         try {
-          console.log("Fetching data for resourceGroup:", resourceGroup);
-
           const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}&ClientId=${selectedCompany.id}`
+            `https://vsndirect.com/swagger/api/Consumption/CostManagementResourceBy?ResourceGroup=${resourceGroup}&ClientId=${selectedCompany.id}`,
+            { headers: { accept: "*/*" } }
           );
-            console.log(response)
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
           const data = await response.json();
-          const rows = data.properties.rows.map(([preTaxCost]) => ({
-            preTaxCost,
-          }));
-
+          const rows = data.properties.rows.map(([preTaxCost]) => ({ preTaxCost }));
           const total = rows.reduce((sum, { preTaxCost }) => sum + preTaxCost, 0);
-
+            console.log(data.properties.rows)
           setTableRows([{ resourceName: resourceGroup, totalCost: total }]);
           setTotalCost(total);
-          setLoading(false);
           success = true;
         } catch (error) {
           console.error("Error fetching data:", error);
           setError(error);
           retryCount++;
           if (retryCount < maxRetries) {
-            console.log(`Retrying... attempt ${retryCount + 1}`);
             await new Promise((resolve) => setTimeout(resolve, 1000));
-          } else {
-            setLoading(false);
           }
+        } finally {
+          setLoading(false);
         }
       }
     };
 
     fetchData();
-  }, [resourceGroup]);
+  }, [resourceGroup, selectedCompany.id]);
 
   return (
     <section className="bg-white">
@@ -65,35 +57,48 @@ export function ResourceTable({ resourceGroup,selectedCompany }) {
           <div className="text-center py-4 flex-grow">Loading...</div>
         ) : (
           <div className="flex flex-col flex-grow">
-            <table className="w-full min-w-max table-auto text-left flex-grow">
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th key={head} className="border-b border-gray-300 pb-4 pt-10">
-                      <Typography variant="small" color="blue-gray" className="font-bold leading-none">
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className=" gap-1 w-[100%]">
-                {tableRows.map(({ resourceName, totalCost }, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className=" border-b border-gray-300">
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {resourceName}
-                      </Typography>
-                    </td>
-                    <td className=" border-b border-gray-300">
-                      <Typography variant="small" color="blue-gray" className="font-bold">
-                        ₹{typeof totalCost === "number" ? totalCost.toFixed(2) : "Error Fetching Data"}
-                      </Typography>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* Table Header */}
+            <div className="flex justify-between border-b border-gray-300 pb-4 pt-10 px-4">
+              {TABLE_HEAD.map((head) => (
+                <Typography 
+                  key={head}
+                  variant="small" 
+                  color="blue-gray" 
+                  className="font-bold leading-none"
+                >
+                  {head}
+                </Typography>
+              ))}
+            </div>
+
+            {/* Single Data Row */}
+            {tableRows[0] && (
+              <div className="flex justify-between hover:bg-gray-50 border-b border-gray-300 py-4 px-4">
+                <Typography 
+                  variant="small" 
+                  color="blue-gray" 
+                  className="font-normal truncate"
+                >
+                  {tableRows[0].resourceName}
+                </Typography>
+                <Typography 
+                  variant="small" 
+                  color="blue-gray" 
+                  className="font-bold"
+                >
+                  ₹{typeof tableRows[0].totalCost === "number" 
+                    ? tableRows[0].totalCost.toFixed(2) 
+                    : "N/A"}
+                </Typography>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="text-center py-4 text-red-500">
+                Error loading data: {error.message}
+              </div>
+            )}
           </div>
         )}
       </Card>

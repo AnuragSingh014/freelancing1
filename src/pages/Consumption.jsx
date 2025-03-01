@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import SearchBox from "../components/consumption/SearchBox";
 import Box1 from "../components/consumption/Box1";
 import Savings from "../components/consumption/Savings";
 import Table from "../components/consumption/Table";
 
+const monthsData = [
+  { display: "May 24", value: "0524" },
+  { display: "Jun 24", value: "0624" },
+  { display: "Jul 24", value: "0724" },
+  { display: "Aug 24", value: "0824" },
+  { display: "Sep 24", value: "0924" },
+  { display: "Oct 24", value: "1024" },
+  { display: "Nov 24", value: "1124" },
+  { display: "Dec 24", value: "1224" },
+  { display: "Jan 25", value: "0125" },
+  { display: "Feb 25", value: "0225" },
+  { display: "Mar 25", value: "0325" },
+  { display: "Apr 25", value: "0425" }
+];
 
 const Consumption = ({selectedCompany}) => {
   const [meterRegion, setMeterRegion] = useState("");
@@ -12,10 +26,34 @@ const Consumption = ({selectedCompany}) => {
     setMeterRegion(e.target.value);
   };
 
-  const handleApply = () => {
-    // You can add additional logic here if needed
-    console.log("Applying filter for region:", meterRegion);
+  const [selectedMenuItem, setSelectedMenuItem] = useState("mis-uat");
+  const [selectedMonthYear, setSelectedMonthYear] = useState("0125");
+
+  const handleMenuItemChange = (menuItem) => {
+    setSelectedMenuItem(menuItem);
   };
+
+  const handleMonthYearChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedMonthYear(selectedValue);
+  };
+
+  const handleApply = () => {
+    console.log("Applying filter for:", selectedMenuItem);
+    console.log("Selected Month-Year:", selectedMonthYear);
+  };
+
+  useEffect(() => {
+    console.log("Selected Menu Item:", selectedMenuItem);
+    console.log("Selected Month-Year:", selectedMonthYear);
+  }, [selectedMenuItem, selectedMonthYear]);
+
+  const [aggregates, setAggregates] = useState({
+    maxMemoryThree: 0,
+    maxCpuThree: 0,
+    sumMemoryThree: 0,
+    sumCpuThree: 0,
+  });
 
   return (
     <div className="p-4 w-full">
@@ -25,26 +63,23 @@ const Consumption = ({selectedCompany}) => {
 
         <div className="flex flex-row gap-1.5 items-end">
           <div>
-            <SearchBox />
+            <div className="text-sm">Time Filter</div>
+            <select
+              value={selectedMonthYear}
+              onChange={handleMonthYearChange}
+              className="p-2 border rounded-md"
+            >
+              {monthsData.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.display}
+                </option>
+              ))}
+            </select>
           </div>
-          <div></div>
-          <div>
-            <div className="text-sm">Meter</div>
-            <input
-              type="text"
-              value={meterRegion}
-              onChange={handleMeterRegionChange}
-              className="border rounded-md p-1"
-              placeholder="Enter region"
-            />
-          </div>
-          <button 
-            className="bg-green-400 p-1 rounded-md"
-            onClick={handleApply}
-          > 
+          {/* <button className="bg-green-400 py-2 px-3 rounded-md" onClick={handleApply}>
             Apply
           </button>
-          <button className="bg-green-500 p-1 rounded-md">Snooze all</button>
+          <button className="bg-green-500 py-2 px-3 rounded-md">Snooze all</button> */}
         </div>
       </div>
 
@@ -54,7 +89,52 @@ const Consumption = ({selectedCompany}) => {
       {/* <Savings /> */}
 
       {/* table */}
-      <Table meterRegion={meterRegion} selectedCompany={selectedCompany}/>
+      <div className="flex flex-col md:flex-row items-start gap-0 mt-5">
+      {/* Left side: your table */}
+      <div className="w-3/4">
+        <Table
+          meterRegion={meterRegion}
+          month={selectedMonthYear}
+          selectedCompany={selectedCompany}
+          onAggregateData={setAggregates}
+        />
+      </div>
+
+      {/* Right side: stat boxes */}
+      <div className="flex flex-col gap-4 ml-2">
+        {/* Box for 3-Month Maximum Memory */}
+        <div className="border border-gray-300 rounded p-4 w-72 text-center">
+          <div className="text-sm text-gray-600 uppercase mb-1">3 Month Max Memory</div>
+          <div className="text-2xl font-bold text-gray-800">
+            {aggregates.maxMemoryThree.toLocaleString()}
+          </div>
+        </div>
+
+        {/* Box for 3-Month Maximum CPU */}
+        <div className="border border-gray-300 rounded p-4 w-72 text-center">
+          <div className="text-sm text-gray-600 uppercase mb-1">3 Month Max CPU</div>
+          <div className="text-2xl font-bold text-gray-800">
+            {aggregates.maxCpuThree.toLocaleString()}
+          </div>
+        </div>
+
+        {/* Box for 3-Month Sum of Memory */}
+        <div className="border border-gray-300 rounded p-4 w-72 text-center">
+          <div className="text-sm text-gray-600 uppercase mb-1">3 Month Average monthly Memory utilization</div>
+          <div className="text-2xl font-bold text-gray-800">
+            {(((aggregates.sumMemoryThree)).toLocaleString())}
+          </div>
+        </div>
+
+        {/* Box for 3-Month Sum of CPU */}
+        <div className="border border-gray-300 rounded p-4 w-72 text-center">
+          <div className="text-sm text-gray-600 uppercase mb-1">3 Month average CPU utilization</div>
+          <div className="text-2xl font-bold text-gray-800">
+            {(((aggregates.sumCpuThree)).toLocaleString())}
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   );
 };

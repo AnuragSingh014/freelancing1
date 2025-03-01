@@ -82,10 +82,10 @@ const CompanyExpense = ({selectedCompany}) => {
               ))}
             </select>
           </div>
-          <button className="bg-green-400 py-2 px-3 rounded-md" onClick={handleApply}>
+          {/* <button className="bg-green-400 py-2 px-3 rounded-md" onClick={handleApply}>
             Apply
           </button>
-          <button className="bg-green-500 py-2 px-3 rounded-md">Snooze all</button>
+          <button className="bg-green-500 py-2 px-3 rounded-md">Snooze all</button> */}
         </div>
       </div>
       <div className="mt-4 ">

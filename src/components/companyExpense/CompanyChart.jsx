@@ -12,18 +12,19 @@ export default function CompanyChart({selectedCompany}) {
     const fetchData = async () => {
       try {
         const fetchMonthData = async (from, to, month) => {
-          const fromFormatted = encodeURIComponent(dayjs(from).format("YYYY/MM/DD"));
-          const toFormatted = encodeURIComponent(dayjs(to).format("YYYY/MM/DD"));
-
-          console.log("Fetching data for:", month, fromFormatted, toFormatted);
-
-          const response = await fetch(
-            `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}?ClientId=${selectedCompany.id}`,
-            {
-              method: "POST",
-              headers: { Accept: "*/*" },
-            }
-          );
+          const fromFormatted = encodeURIComponent(dayjs(from).format("YYYY-MM-DD"));
+          const toFormatted = encodeURIComponent(dayjs(to).format("YYYY-MM-DD"));
+        
+          console.log("Fetching data for:", month, fromFormatted, toFormatted); // Debugging
+        
+          const url = `https://vsndirect.com/swagger/api/Consumption/TotalCost?from=${fromFormatted}&to=${toFormatted}&ClientId=${selectedCompany.id}`;
+        
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              Accept: "*/*",
+            },
+          });
 
           if (!response.ok) {
             throw new Error(`Error: ${response.status} ${response.statusText}`);
