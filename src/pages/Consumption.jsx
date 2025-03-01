@@ -84,7 +84,7 @@ const Consumption = ({selectedCompany}) => {
       </div>
 
       {/* box 1 */}
-      <Box1 selectedCompany={selectedCompany}/>
+      <Box1 selectedCompany={selectedCompany} month={selectedMonthYear}/>
       {/* savings */}
       {/* <Savings /> */}
 
