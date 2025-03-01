@@ -154,8 +154,7 @@ const Box1 = ({ selectedCompany, month }) => {
             <div className="text-2xl font-semibold">₹{avgCpuCost.toFixed(2)}</div>
           </div>
           <div className="text-center w-full md:w-1/4 flex flex-col items-center justify-center py-4 bg-gray-100 border border-gray-300">
-            <div>Average Memory Cost per Month</div>
-            <div>(Past 3 Months)</div>
+            <div>Average Memory Cost per Month (Past 3 Months) </div>
             <div className="text-2xl font-semibold">₹{avgMemoryCost.toFixed(2)}</div>
           </div>
         </>
