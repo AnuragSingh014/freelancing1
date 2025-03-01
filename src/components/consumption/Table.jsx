@@ -301,12 +301,12 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
                   </td>
                   <td className={`${classes} px-6`}>
                     <Typography variant="small" className="font-normal text-gray-600">
-                      {row.currentCpu.toFixed(2)}
+                      {row.currentCpu.toFixed(2)}%
                     </Typography>
                   </td>
                   <td className={`${classes} px-6`}>
                     <Typography variant="small" className="font-normal text-gray-600">
-                      {row.maxCpuCurrent}
+                      {row.maxCpuCurrent}%
                     </Typography>
                   </td>
                   <td className={`${classes} px-6`}>

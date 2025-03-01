@@ -114,7 +114,7 @@ const Consumption = ({selectedCompany}) => {
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month Max CPU</div>
           <div className="text-2xl font-bold text-gray-800">
-            {aggregates.maxCpuThree.toLocaleString()}
+            {aggregates.maxCpuThree.toLocaleString()}%
           </div>
         </div>
 
@@ -130,7 +130,7 @@ const Consumption = ({selectedCompany}) => {
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month average CPU utilization</div>
           <div className="text-2xl font-bold text-gray-800">
-            {(((aggregates.sumCpuThree)).toLocaleString())}
+            {(((aggregates.sumCpuThree)).toLocaleString())}%
           </div>
         </div>
       </div>
