@@ -5,12 +5,12 @@ const TABLE_HEAD = ["Resource", "Total Cost"];
 
 export function ResourceTable({ resourceGroup, selectedCompany }) {
   const [tableRows, setTableRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [totalCost, setTotalCost] = useState(0);
 
   useEffect(() => {
-    if (!resourceGroup) return;
+    if (!resourceGroup || resourceGroup === "") return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -30,7 +30,7 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
           const data = await response.json();
           const rows = data.properties.rows.map(([preTaxCost]) => ({ preTaxCost }));
           const total = rows.reduce((sum, { preTaxCost }) => sum + preTaxCost, 0);
-            console.log(data.properties.rows)
+
           setTableRows([{ resourceName: resourceGroup, totalCost: total }]);
           setTotalCost(total);
           success = true;
@@ -53,7 +53,13 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
   return (
     <section className="bg-white">
       <Card className="h-96 overflow-y-auto border border-gray-300 px-6 flex flex-col">
-        {loading ? (
+        {resourceGroup === "" ? (
+          <div className="flex-1 flex items-center justify-center">
+            <Typography variant="h6" color="gray" className="text-center">
+              Please select a resource group
+            </Typography>
+          </div>
+        ) : loading ? (
           <div className="text-center py-4 flex-grow">Loading...</div>
         ) : (
           <div className="flex flex-col flex-grow">

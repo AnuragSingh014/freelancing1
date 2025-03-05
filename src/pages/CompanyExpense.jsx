@@ -23,7 +23,7 @@ const monthsData = [
 ];
 
 const CompanyExpense = ({selectedCompany}) => {
-  const [selectedMenuItem, setSelectedMenuItem] = useState("mis-uat");
+  const [selectedMenuItem, setSelectedMenuItem] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState("0125");
 
   const handleMenuItemChange = (menuItem) => {
@@ -108,6 +108,7 @@ const CompanyExpense = ({selectedCompany}) => {
           <div className=" flex text-center items-center justify-center rounded-md text-xl px-4 py-8 bg-orange-300">
             <div className="">Resource Cost </div>
             <MenuListDropDown
+              selectedCompany={selectedCompany}
               name={selectedMenuItem}
               className="text-black m-0 bg-orange-500 rounded-md text-xl"
               onChange={handleMenuItemChange}
