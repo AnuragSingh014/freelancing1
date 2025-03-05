@@ -24,11 +24,11 @@ const Advisory = ({selectedCompany}) => {
         <div className="text-3xl">Advisory</div>
 
         <div className="flex flex-row gap-1.5 items-end">
-          <div>
+          {/* <div>
             <SearchBox />
-          </div>
-          <div></div>
-          <div>
+          </div> */}
+          {/* <div></div> */}
+          {/* <div>
             <div className="text-sm">Meter</div>
             <input
               type="text"
@@ -37,7 +37,7 @@ const Advisory = ({selectedCompany}) => {
               className="border rounded-md p-1"
               placeholder="Enter region"
             />
-          </div>
+          </div> */}
           {/* <button 
             className="bg-green-400 p-1 rounded-md"
             onClick={handleApply}
