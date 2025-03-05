@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Typography } from "@material-tailwind/react";
 
-// Helper: Format a Date object as "yyyy-mm-dd"
 const formatDate = (date) => {
   const year = date.getFullYear();
   const monthStr = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -9,8 +8,6 @@ const formatDate = (date) => {
   return `${year}-${monthStr}-${day}`;
 };
 
-// Get date range for a month from an mmyy string (e.g., "0225")
-// If the month is the current month (incomplete), end date is today's date.
 const getMonthRange = (mmyy) => {
   const monthPart = mmyy.substring(0, 2);
   const yearPart = '20' + mmyy.substring(2, 4);
@@ -30,8 +27,6 @@ const getMonthRange = (mmyy) => {
   return { startDate, endDate };
 };
 
-// Get the range for the past three months (current month plus the two previous months).
-// If the current month is incomplete, its end date is set to today's date.
 const getThreeMonthRange = (mmyy) => {
   const currentMonth = parseInt(mmyy.substring(0, 2), 10);
   const currentYear = parseInt('20' + mmyy.substring(2, 4), 10);
@@ -57,72 +52,61 @@ const getThreeMonthRange = (mmyy) => {
   return { startDate, endDate };
 };
 
-// Sum all timeseries.average values in the API response.
 const sumTimeseries = (apiData) => {
   let total = 0;
-  if (apiData && Array.isArray(apiData.value)) {
+  if (apiData?.value) {
     apiData.value.forEach((metric) => {
-      if (metric.timeseries && Array.isArray(metric.timeseries)) {
-        metric.timeseries.forEach((series) => {
-          if (series.data && Array.isArray(series.data)) {
-            series.data.forEach((point) => {
-              if (point.average !== undefined && point.average !== null) {
-                total += point.average;
-              }
-            });
-          }
+      metric.timeseries?.forEach((series) => {
+        series.data?.forEach((point) => {
+          if (typeof point.average === 'number') total += point.average;
         });
-      }
+      });
     });
   }
   return total;
 };
 
-// Return the maximum data.average value from the API response.
 const maxTimeseries = (apiData) => {
   let maxValue = -Infinity;
-  if (apiData && Array.isArray(apiData.value)) {
+  if (apiData?.value) {
     apiData.value.forEach((metric) => {
-      if (metric.timeseries && Array.isArray(metric.timeseries)) {
-        metric.timeseries.forEach((series) => {
-          if (series.data && Array.isArray(series.data)) {
-            series.data.forEach((point) => {
-              if (
-                point.average !== undefined &&
-                point.average !== null &&
-                point.average > maxValue
-              ) {
-                maxValue = point.average;
-              }
-            });
-          }
+      metric.timeseries?.forEach((series) => {
+        series.data?.forEach((point) => {
+          if (point.average > maxValue) maxValue = point.average;
         });
-      }
+      });
     });
   }
   return maxValue === -Infinity ? 0 : maxValue;
 };
 
-// Updated table headers: Added cost columns.
 const TABLE_HEAD = [
   "Resource Group",
   "VM Name",
-  "CPU Avg",
+  // CPU Metrics
+  "CPU Avg (Current)",
+  // "CPU Sum",
   "CPU Max",
-  "CPU Cost",
+  "3M CPU Avg",
+  "3M CPU Max",
+  "CPU Cost (Current)",
+  "3M CPU Cost",
+  // Memory Metrics
   "Memory Avg",
+  // "Memory Sum",
   "Memory Max",
-  "Memory Cost",
+  "3M Memory Avg",
+  "3M Memory Max",
+  // "Memory Cost",
+  // "3M Memory Cost"
 ];
 
 const Table = ({ selectedCompany, month, onAggregateData }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Define resource groups as an array of objects.
   const resourceGroupList = [
     { name: 'prod-rg', vm: 'vm-psql-prod-rg-01' },
-    // You can add more resource groups here.
   ];
 
   useEffect(() => {
@@ -133,7 +117,6 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
       const baseUrl = 'https://vsndirect.com/swagger/api/Consumption/AzureMonitor';
       const clientId = selectedCompany.id;
 
-      // Build URL helper using the provided parameters.
       const buildUrl = (resourceData, fromDate, toDate) =>
         `${baseUrl}?resourceGroups=${name}&virtualMachines=${vm}&ClientId=${clientId}&resourceData=${resourceData}&fromDate=${fromDate}&todate=${toDate}`;
 
@@ -145,18 +128,14 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
       };
 
       try {
-        // Fetch all four API calls in parallel.
         const [
           resCpuCurrent,
           resCpuThree,
           resMemoryCurrent,
           resMemoryThree,
-        ] = await Promise.all([
-          fetch(urls.cpuCurrent, { headers: { accept: '*/*' } }),
-          fetch(urls.cpuThree, { headers: { accept: '*/*' } }),
-          fetch(urls.memoryCurrent, { headers: { accept: '*/*' } }),
-          fetch(urls.memoryThree, { headers: { accept: '*/*' } }),
-        ]);
+        ] = await Promise.all(Object.values(urls).map(url => 
+          fetch(url, { headers: { accept: '*/*' } })
+        ));
 
         const [
           dataCpuCurrent,
@@ -170,57 +149,45 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
           resMemoryThree.json(),
         ]);
 
-        // Calculate number of days in the current month (from currentRange.endDate)
+        // Current month calculations
         const currentDaysCount = new Date(currentRange.endDate).getDate();
+        const sumCpuCurrent = sumTimeseries(dataCpuCurrent);
+        const sumMemoryCurrent = sumTimeseries(dataMemoryCurrent);
 
-        // Calculate number of days in the three-month period.
-        const startThree = new Date(threeMonthRange.startDate);
-        const endThree = new Date(threeMonthRange.endDate);
-        const threeMonthDaysCount = Math.floor((endThree - startThree) / (1000 * 60 * 60 * 24)) + 1;
-
-        const avgCpuCurrent = sumTimeseries(dataCpuCurrent) / currentDaysCount;
-        const avgMemoryCurrent = sumTimeseries(dataMemoryCurrent) / currentDaysCount;
-        const maxCpuCurrent = maxTimeseries(dataCpuCurrent);
-        const maxMemoryCurrent = maxTimeseries(dataMemoryCurrent);
-
-        // Extract cost from the API response for current month.
-        const costCpu = dataCpuCurrent.cost;
-        const costMemory = dataMemoryCurrent.cost;
-
-        // For three-month aggregates, return the sum of averages divided by the total days in the period.
-        const threeMonthCpuAvg = sumTimeseries(dataCpuThree) / threeMonthDaysCount;
-        const threeMonthMemoryAvg = sumTimeseries(dataMemoryThree) / threeMonthDaysCount;
+        // Three-month calculations
+        const threeMonthCpuAvg = sumTimeseries(dataCpuThree) / 3;
+        const threeMonthMemoryAvg = sumTimeseries(dataMemoryThree) / 3;
 
         return {
           resourceGroup: name,
           vm: vm,
-          currentCpu: avgCpuCurrent,      // Average per day for CPU (current month)
-          maxCpuCurrent: maxCpuCurrent,     // Maximum CPU average (current month)
-          costCpu: costCpu,                // Cost for CPU (current month)
-          currentMemory: avgMemoryCurrent,  // Average per day for Memory (current month)
-          maxMemoryCurrent: maxMemoryCurrent, // Maximum Memory average (current month)
-          costMemory: costMemory,          // Cost for Memory (current month)
-          threeMonthCpu: threeMonthCpuAvg, // Three-month aggregate (average daily CPU)
-          threeMonthMemory: threeMonthMemoryAvg, // Three-month aggregate (average daily Memory)
-          // The following remain for higher component requirements.
+          // CPU Metrics
+          currentCpu: sumCpuCurrent / currentDaysCount,
+          sumCpuCurrent,
+          maxCpuCurrent: maxTimeseries(dataCpuCurrent),
+          threeMonthCpuAvg,
           maxCpuThree: maxTimeseries(dataCpuThree),
+          costCpu: dataCpuCurrent.cost || 0,
+          costCpuThree: dataCpuThree.cost || 0,
+          
+          // Memory Metrics
+          currentMemory: sumMemoryCurrent / currentDaysCount,
+          sumMemoryCurrent,
+          maxMemoryCurrent: maxTimeseries(dataMemoryCurrent),
+          threeMonthMemoryAvg,
           maxMemoryThree: maxTimeseries(dataMemoryThree),
+          costMemory: dataMemoryCurrent.cost || 0,
+          costMemoryThree: dataMemoryThree.cost || 0
         };
       } catch (error) {
         console.error(`Error fetching data for ${name}:`, error);
         return {
           resourceGroup: name,
           vm: vm,
-          currentCpu: 0,
-          maxCpuCurrent: 0,
-          costCpu: 0,
-          currentMemory: 0,
-          maxMemoryCurrent: 0,
-          costMemory: 0,
-          threeMonthCpu: 0,
-          threeMonthMemory: 0,
-          maxCpuThree: 0,
-          maxMemoryThree: 0,
+          currentCpu: 0, sumCpuCurrent: 0, maxCpuCurrent: 0,
+          threeMonthCpuAvg: 0, maxCpuThree: 0, costCpu: 0, costCpuThree: 0,
+          currentMemory: 0, sumMemoryCurrent: 0, maxMemoryCurrent: 0,
+          threeMonthMemoryAvg: 0, maxMemoryThree: 0, costMemory: 0, costMemoryThree: 0
         };
       }
     }
@@ -228,23 +195,17 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
     async function fetchAllData() {
       setLoading(true);
       try {
-        const results = await Promise.all(
-          resourceGroupList.map((group) => fetchDataForGroup(group))
-        );
+        const results = await Promise.all(resourceGroupList.map(fetchDataForGroup));
         setTableData(results);
-
-        // Compute aggregates for three-month data, using the averaged values.
-        const aggregates = results.reduce(
-          (acc, item) => {
-            acc.sumCpuThree += item.threeMonthCpu;
-            acc.sumMemoryThree += item.threeMonthMemory;
-            acc.maxCpuThree = Math.max(acc.maxCpuThree, item.maxCpuThree);
-            acc.maxMemoryThree = Math.max(acc.maxMemoryThree, item.maxMemoryThree);
-            return acc;
-          },
-          { sumCpuThree: 0, sumMemoryThree: 0, maxCpuThree: 0, maxMemoryThree: 0 }
-        );
+        
         if (onAggregateData) {
+          const aggregates = results.reduce((acc, item) => ({
+            sumCpuThree: acc.sumCpuThree + item.threeMonthCpuAvg,
+            sumMemoryThree: acc.sumMemoryThree + item.threeMonthMemoryAvg,
+            maxCpuThree: Math.max(acc.maxCpuThree, item.maxCpuThree),
+            maxMemoryThree: Math.max(acc.maxMemoryThree, item.maxMemoryThree)
+          }), { sumCpuThree: 0, sumMemoryThree: 0, maxCpuThree: 0, maxMemoryThree: 0 });
+          
           onAggregateData(aggregates);
         }
       } catch (error) {
@@ -275,7 +236,7 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
             <tr>
               {TABLE_HEAD.map((head) => (
                 <th key={head} className="border-b border-gray-300 pb-4 pt-10 px-6">
-                  <Typography variant="small" color="blue-gray" className="font-bold leading-none">
+                  <Typography variant="small" className="font-bold leading-none">
                     {head}
                   </Typography>
                 </th>
@@ -283,55 +244,30 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
             </tr>
           </thead>
           <tbody>
-            {tableData.map((row, index) => {
-              const isLast = index === tableData.length - 1;
-              const classes = isLast ? "py-4" : "py-4 border-b border-gray-300";
-              const rowColor = index % 2 === 0 ? "bg-blue-100" : "bg-gray-100";
-              return (
-                <tr key={row.resourceGroup} className={`${rowColor} hover:bg-gray-50`}>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.resourceGroup}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.vm}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.currentCpu.toFixed(2)}%
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.maxCpuCurrent}%
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.costCpu}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.currentMemory.toFixed(2)}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.maxMemoryCurrent}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} px-6`}>
-                    <Typography variant="small" className="font-normal text-gray-600">
-                      {row.costMemory}
-                    </Typography>
-                  </td>
-                </tr>
-              );
-            })}
+            {tableData.map((row, index) => (
+              <tr key={row.resourceGroup} className={`${index % 2 ? 'bg-gray-100' : 'bg-blue-100'} hover:bg-gray-50`}>
+                <td className="py-4 px-6">{row.resourceGroup}</td>
+                <td className="py-4 px-6">{row.vm}</td>
+                
+                {/* CPU Columns */}
+                <td className="py-4 px-6">{row.currentCpu.toFixed(2)}%</td>
+                {/* <td className="py-4 px-6">{row.sumCpuCurrent.toFixed(2)}%</td> */}
+                <td className="py-4 px-6">{row.maxCpuCurrent.toFixed(2)}%</td>
+                <td className="py-4 px-6">{row.threeMonthCpuAvg.toFixed(2)}%</td>
+                <td className="py-4 px-6">{row.maxCpuThree.toFixed(2)}%</td>
+                <td className="py-4 px-6">₹{row.costCpu.toFixed(2)}</td>
+                <td className="py-4 px-6">₹{row.costCpuThree.toFixed(2)}</td>
+                
+                {/* Memory Columns */}
+                <td className="py-4 px-6">{((row.currentMemory)/1e9).toFixed(2)}GB</td>
+                {/* <td className="py-4 px-6">{((row.sumMemoryCurrent)/1e9).toFixed(2)}GB</td> */}
+                <td className="py-4 px-6">{((row.maxMemoryCurrent)/1e9).toFixed(2)}GB</td>
+                <td className="py-4 px-6">{((row.threeMonthMemoryAvg)/1e9).toFixed(2)}GB</td>
+                <td className="py-4 px-6">{((row.maxMemoryThree)/1e9).toFixed(2)}GB</td>
+                {/* <td className="py-4 px-6">₹{row.costMemory.toFixed(2)}</td>
+                <td className="py-4 px-6">₹{row.costMemoryThree.toFixed(2)}</td> */}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

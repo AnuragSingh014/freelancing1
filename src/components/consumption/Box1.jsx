@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-// Helper: Format a Date object as "yyyy-mm-dd"
 const formatDate = (date) => {
   const year = date.getFullYear();
   const monthStr = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -10,115 +9,95 @@ const formatDate = (date) => {
 
 const Box1 = ({ selectedCompany, month }) => {
   const [loading, setLoading] = useState(false);
-  const [totalCpuCost, setTotalCpuCost] = useState(0);
-  const [totalMemoryCost, setTotalMemoryCost] = useState(0);
-  const [avgCpuCost, setAvgCpuCost] = useState(0);
-  const [avgMemoryCost, setAvgMemoryCost] = useState(0);
+  const [selectedMonthCost, setSelectedMonthCost] = useState(0);
+  const [threeMonthCost, setThreeMonthCost] = useState(0);
   const [error, setError] = useState(null);
 
-  // Use the same resource group list as in your table component.
-  const resourceGroupList = [
-    { name: "prod-rg", vm: "vm-psql-prod-rg-01" },
-    // You can add more resource groups here.
-  ];
+  const resourceGroupList = [{ name: "prod-rg", vm: "vm-psql-prod-rg-01" }];
 
-  // Get three-month range based on a passed month (in "mmyy" format).
-  // The range starts from the first day of (currentMonth - 2) and ends:
-  //   • at yesterday if the passed month is the current month,
-  //   • or at the last day of the passed month otherwise.
-  const getThreeMonthRange = (mmyy) => {
+  const getDateRange = (mmyy, isThreeMonth = false) => {
     const currentMonth = parseInt(mmyy.substring(0, 2), 10);
     const currentYear = parseInt("20" + mmyy.substring(2, 4), 10);
 
-    let startMonth = currentMonth - 2;
-    let startYear = currentYear;
-    if (startMonth < 1) {
-      startMonth += 12;
-      startYear -= 1;
+    if (isThreeMonth) {
+      let startMonth = currentMonth - 2;
+      let startYear = currentYear;
+      if (startMonth < 1) {
+        startMonth += 12;
+        startYear -= 1;
+      }
+      return {
+        startDate: `${startYear}-${startMonth.toString().padStart(2, "0")}-01`,
+        endDate: formatDate(new Date(currentYear, currentMonth - 1, 0))
+      };
     }
-    const startMonthStr = startMonth.toString().padStart(2, "0");
-    const startDate = `${startYear}-${startMonthStr}-01`;
 
+    // For selected month
+    const startDate = `${currentYear}-${currentMonth.toString().padStart(2, "0")}-01`;
     const now = new Date();
     let endDate;
-    if (now.getFullYear() === currentYear && (now.getMonth() + 1) === currentMonth) {
-      // For the current month, use yesterday's date.
+    
+    if (now.getFullYear() === currentYear && now.getMonth() + 1 === currentMonth) {
       const yesterday = new Date(now);
       yesterday.setDate(now.getDate() - 1);
       endDate = formatDate(yesterday);
     } else {
-      // Otherwise, use the last day of the passed month.
-      const endDay = new Date(currentYear, currentMonth, 0).getDate();
-      const currentMonthStr = currentMonth.toString().padStart(2, "0");
-      endDate = `${currentYear}-${currentMonthStr}-${endDay.toString().padStart(2, "0")}`;
+      endDate = formatDate(new Date(currentYear, currentMonth, 0));
     }
-    // (daysCount is no longer used for averaging per month.)
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const daysCount = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-    return { startDate, endDate, daysCount };
+
+    return { startDate, endDate };
   };
 
   useEffect(() => {
-    if (!selectedCompany || !selectedCompany.id || !month) return;
+    if (!selectedCompany?.id || !month) return;
 
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const { startDate, endDate } = getThreeMonthRange(month);
         const baseUrl = "https://vsndirect.com/swagger/api/Consumption/AzureMonitor";
         const clientId = selectedCompany.id;
 
-        // Build URL helper using the provided parameters.
-        // "name" and "vm" come from each resource group.
-        const buildUrl = (name, vm, resourceData, fromDate, toDate) =>
-          `${baseUrl}?resourceGroups=${name}&virtualMachines=${vm}&ClientId=${clientId}&resourceData=${resourceData}&fromDate=${fromDate}&todate=${toDate}`;
-
-        // For each resource group, fetch cost for CPU and Memory.
-        const fetchGroupCost = async (group) => {
+        const fetchCosts = async (group) => {
           const { name, vm } = group;
-          const urlCpu = buildUrl(name, vm, "CPU", startDate, endDate);
-          const urlMemory = buildUrl(name, vm, "Memory", startDate, endDate);
-          const [resCpu, resMemory] = await Promise.all([
-            fetch(urlCpu, { headers: { Accept: "*/*" } }),
-            fetch(urlMemory, { headers: { Accept: "*/*" } }),
+          
+          // Selected month range
+          const selectedRange = getDateRange(month);
+          const urlSelected = `${baseUrl}?resourceGroups=${name}&virtualMachines=${vm}&ClientId=${clientId}&resourceData=CPU&fromDate=${selectedRange.startDate}&todate=${selectedRange.endDate}`;
+
+          // 3-month range
+          const threeMonthRange = getDateRange(month, true);
+          const urlThreeMonth = `${baseUrl}?resourceGroups=${name}&virtualMachines=${vm}&ClientId=${clientId}&resourceData=CPU&fromDate=${threeMonthRange.startDate}&todate=${threeMonthRange.endDate}`;
+
+          const [resSelected, resThreeMonth] = await Promise.all([
+            fetch(urlSelected, { headers: { Accept: "*/*" } }),
+            fetch(urlThreeMonth, { headers: { Accept: "*/*" } })
           ]);
 
-          if (!resCpu.ok || !resMemory.ok) {
-            throw new Error(
-              `HTTP error for ${name}: CPU status: ${resCpu.status}, Memory status: ${resMemory.status}`
-            );
+          if (!resSelected.ok || !resThreeMonth.ok) {
+            throw new Error(`HTTP error! Statuses: ${resSelected.status}, ${resThreeMonth.status}`);
           }
 
-          const dataCpu = await resCpu.json();
-          const dataMemory = await resMemory.json();
+          const dataSelected = await resSelected.json();
+          const dataThreeMonth = await resThreeMonth.json();
 
           return {
-            cpuCost: dataCpu.cost || 0,
-            memoryCost: dataMemory.cost || 0,
+            selected: dataSelected.cost || 0,
+            threeMonth: dataThreeMonth.cost || 0
           };
         };
 
-        // Fetch cost for all resource groups in parallel.
-        const results = await Promise.all(
-          resourceGroupList.map((group) => fetchGroupCost(group))
-        );
-        let totalCpu = 0;
-        let totalMemory = 0;
-        results.forEach((result) => {
-          totalCpu += result.cpuCost;
-          totalMemory += result.memoryCost;
-        });
+        const results = await Promise.all(resourceGroupList.map(fetchCosts));
+        
+        const totalSelected = results.reduce((sum, r) => sum + r.selected, 0);
+        const totalThreeMonth = results.reduce((sum, r) => sum + r.threeMonth, 0);
 
-        setTotalCpuCost(totalCpu);
-        setTotalMemoryCost(totalMemory);
-        // Average per month (over 3 months)
-        setAvgCpuCost(totalCpu / 3);
-        setAvgMemoryCost(totalMemory / 3);
+        setSelectedMonthCost(totalSelected);
+        setThreeMonthCost(totalThreeMonth);
+
       } catch (err) {
-        console.error("Error fetching consumption cost data:", err);
+        console.error("Error fetching costs:", err);
         setError(err);
       } finally {
         setLoading(false);
@@ -138,24 +117,15 @@ const Box1 = ({ selectedCompany, month }) => {
         </div>
       ) : (
         <>
-          <div className="text-center w-full md:w-1/4 flex flex-col items-center justify-center py-4 bg-blue-100 border border-gray-300">
+          <div className="text-center w-full md:w-1/2 flex flex-col items-center justify-center py-4 bg-blue-100 border border-gray-300">
+            <div>CPU Cost</div>
+            <div>(Selected Month)</div>
+            <div className="text-2xl font-semibold">₹{selectedMonthCost.toFixed(2)}</div>
+          </div>
+          <div className="text-center w-full md:w-1/2 flex flex-col items-center justify-center py-4 bg-gray-100 border border-gray-300">
             <div>Total CPU Cost</div>
             <div>(Past 3 Months)</div>
-            <div className="text-2xl font-semibold">₹{totalCpuCost.toFixed(2)}</div>
-          </div>
-          <div className="text-center w-full md:w-1/4 flex flex-col items-center justify-center py-4 bg-gray-100 border border-gray-300">
-            <div>Total Memory Cost</div>
-            <div>(Past 3 Months)</div>
-            <div className="text-2xl font-semibold">₹{totalMemoryCost.toFixed(2)}</div>
-          </div>
-          <div className="text-center w-full md:w-1/4 flex flex-col items-center justify-center py-4 bg-blue-100 border border-gray-300">
-            <div>Average CPU Cost per Month</div>
-            <div>(Past 3 Months)</div>
-            <div className="text-2xl font-semibold">₹{avgCpuCost.toFixed(2)}</div>
-          </div>
-          <div className="text-center w-full md:w-1/4 flex flex-col items-center justify-center py-4 bg-gray-100 border border-gray-300">
-            <div>Average Memory Cost per Month (Past 3 Months) </div>
-            <div className="text-2xl font-semibold">₹{avgMemoryCost.toFixed(2)}</div>
+            <div className="text-2xl font-semibold">₹{threeMonthCost.toFixed(2)}</div>
           </div>
         </>
       )}

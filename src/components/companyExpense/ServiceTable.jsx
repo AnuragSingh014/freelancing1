@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const TABLE_HEAD = ["Service", "Total Cost"];
 
-export function ServiceTable({ date,selectedCompany }) {
+export function ServiceTable({ date, selectedCompany }) {
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,31 +56,51 @@ export function ServiceTable({ date,selectedCompany }) {
           }
 
           const data = await response.json();
+          
+          // Corrected row structure with proper destructuring
           const rows = data.properties.rows.map(
-            ([preTaxCost, usageDate, serviceName]) => ({
+            ([preTaxCost, usageDate, serviceName, currency]) => ({
               preTaxCost,
               usageDate,
               serviceName,
+              currency
             })
           );
 
           const selectedMonth = getMonthFromDate();
-          const today = new Date().getDate();
+          const currentYear = new Date().getFullYear();
 
+          // Filter rows for selected month and services
           const filteredRows = rows.filter(({ usageDate, serviceName }) => {
-            const rowMonth = Math.floor((usageDate % 10000) / 100);
-            const rowDay = usageDate % 100;
-            return rowMonth === selectedMonth && rowDay < today && servicesToShow.includes(serviceName);
+            // Convert YYYYMMDD to Date object
+            const dateStr = usageDate.toString();
+            const year = parseInt(dateStr.substring(0, 4));
+            const month = parseInt(dateStr.substring(4, 6));
+            const day = parseInt(dateStr.substring(6, 8));
+            
+            return month === selectedMonth && 
+                   year === currentYear &&
+                   servicesToShow.includes(serviceName);
           });
 
+          // Aggregate costs for each service
           const aggregatedData = servicesToShow.map((service) => {
             const total = filteredRows
               .filter(({ serviceName }) => serviceName === service)
               .reduce((sum, { preTaxCost }) => sum + preTaxCost, 0);
-            return { serviceName: service, totalCost: total };
+              
+            return { 
+              serviceName: service, 
+              totalCost: total 
+            };
           });
 
-          const grandTotal = aggregatedData.reduce((sum, { totalCost }) => sum + totalCost, 0);
+          // Calculate grand total
+          const grandTotal = aggregatedData.reduce(
+            (sum, { totalCost }) => sum + totalCost,
+            0
+          );
+
           setTableRows(aggregatedData);
           setTotalCost(grandTotal);
           setLoading(false);
@@ -90,7 +110,6 @@ export function ServiceTable({ date,selectedCompany }) {
           setError(error);
           retryCount++;
           if (retryCount < maxRetries) {
-            console.log(`Retrying... attempt ${retryCount + 1}`);
             await new Promise((resolve) => setTimeout(resolve, 1000));
           } else {
             setLoading(false);
@@ -100,21 +119,36 @@ export function ServiceTable({ date,selectedCompany }) {
     };
 
     fetchData();
-  }, [date]);
+  }, [date, selectedCompany]);
 
   return (
     <section className="bg-white">
       <Card className="h-96 overflow-y-auto border border-gray-300 px-6 flex flex-col">
         {loading ? (
           <div className="text-center py-4 flex-grow">Loading...</div>
+        ) : error ? (
+          <div className="text-center py-4 text-red-500">
+            Error loading data: {error.message}
+          </div>
         ) : (
           <div className="flex flex-col flex-grow">
-            <table className="w-full min-w-max table-auto text-left flex-grow">
+            <div className="p-4 border-b">
+              <Typography variant="h6" className="font-bold">
+                Total Cost: ₹{totalCost.toFixed(2)}
+              </Typography>
+            </div>
+            <table className="w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head) => (
-                    <th key={head} className="border-b border-gray-300 pb-4 pt-10">
-                      <Typography variant="small" color="blue-gray" className="font-bold leading-none">
+                    <th 
+                      key={head} 
+                      className="border-b border-gray-300 pb-4 pt-4 px-6"
+                    >
+                      <Typography 
+                        variant="small" 
+                        className="font-bold leading-none"
+                      >
                         {head}
                       </Typography>
                     </th>
@@ -122,20 +156,25 @@ export function ServiceTable({ date,selectedCompany }) {
                 </tr>
               </thead>
               <tbody>
-                {tableRows.map(({ serviceName, totalCost }, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-4 border-b border-gray-300">
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {serviceName}
-                      </Typography>
-                    </td>
-                    <td className="py-4 border-b border-gray-300">
-                      <Typography variant="small" color="blue-gray" className="font-bold">
-                        ₹{totalCost.toFixed(2)}
-                      </Typography>
-                    </td>
-                  </tr>
-                ))}
+                {tableRows
+                  .filter(({ totalCost }) => totalCost > 0)
+                  .map(({ serviceName, totalCost }, index) => (
+                    <tr 
+                      key={index} 
+                      className="hover:bg-gray-50 even:bg-gray-50"
+                    >
+                      <td className="py-3 px-6">
+                        <Typography className="font-normal">
+                          {serviceName}
+                        </Typography>
+                      </td>
+                      <td className="py-3 px-6">
+                        <Typography className="font-bold">
+                          ₹{totalCost.toFixed(2)}
+                        </Typography>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

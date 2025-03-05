@@ -91,7 +91,7 @@ const Consumption = ({selectedCompany}) => {
       {/* table */}
       <div className="flex flex-col md:flex-row items-start gap-0 mt-5">
       {/* Left side: your table */}
-      <div className="w-3/4">
+      <div className="w-full">
         <Table
           meterRegion={meterRegion}
           month={selectedMonthYear}
@@ -101,8 +101,9 @@ const Consumption = ({selectedCompany}) => {
       </div>
 
       {/* Right side: stat boxes */}
+{/*       
       <div className="flex flex-col gap-4 ml-2">
-        {/* Box for 3-Month Maximum Memory */}
+       
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month Max Memory</div>
           <div className="text-2xl font-bold text-gray-800">
@@ -110,7 +111,7 @@ const Consumption = ({selectedCompany}) => {
           </div>
         </div>
 
-        {/* Box for 3-Month Maximum CPU */}
+        
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month Max CPU</div>
           <div className="text-2xl font-bold text-gray-800">
@@ -118,7 +119,6 @@ const Consumption = ({selectedCompany}) => {
           </div>
         </div>
 
-        {/* Box for 3-Month Sum of Memory */}
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month Average monthly Memory utilization</div>
           <div className="text-2xl font-bold text-gray-800">
@@ -126,7 +126,7 @@ const Consumption = ({selectedCompany}) => {
           </div>
         </div>
 
-        {/* Box for 3-Month Sum of CPU */}
+
         <div className="border border-gray-300 rounded p-4 w-72 text-center">
           <div className="text-sm text-gray-600 uppercase mb-1">3 Month average CPU utilization</div>
           <div className="text-2xl font-bold text-gray-800">
@@ -134,6 +134,7 @@ const Consumption = ({selectedCompany}) => {
           </div>
         </div>
       </div>
+       */}
     </div>
     </div>
   );
