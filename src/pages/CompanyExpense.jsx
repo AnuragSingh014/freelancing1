@@ -89,7 +89,7 @@ const CompanyExpense = ({selectedCompany}) => {
         </div>
       </div>
       <div className="mt-4 ">
-        {/* <CompanyChart selectedCompany={selectedCompany}/> */}
+        <CompanyChart selectedCompany={selectedCompany}/>
       </div>
       {/* Three Equal-Height Boxes */}
       <div className="flex w-full mt-16 gap-4">
@@ -125,7 +125,7 @@ const CompanyExpense = ({selectedCompany}) => {
             Subscription cost
           </div>
           <div className="mt-6 flex-1 h-screen">
-            {/* <AccountTable date={selectedMonthYear} selectedCompany={selectedCompany} className="min-h-screen"/> */}
+            <AccountTable date={selectedMonthYear} selectedCompany={selectedCompany} className="min-h-screen"/>
           </div>
         </div>
       </div>
