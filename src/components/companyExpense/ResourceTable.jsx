@@ -10,10 +10,14 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
   const [totalCost, setTotalCost] = useState(0);
 
   useEffect(() => {
+    // Reset states when resource group changes
+    setError(null);
+    
     if (!resourceGroup || resourceGroup === "") return;
 
     const fetchData = async () => {
       setLoading(true);
+      setError(null); // Clear any previous errors
       let retryCount = 0;
       const maxRetries = 10;
       let success = false;
@@ -33,6 +37,7 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
 
           setTableRows([{ resourceName: resourceGroup, totalCost: total }]);
           setTotalCost(total);
+          setError(null); // Ensure error is cleared on success
           success = true;
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -42,7 +47,12 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
             await new Promise((resolve) => setTimeout(resolve, 1000));
           }
         } finally {
-          setLoading(false);
+          if (retryCount >= maxRetries && !success) {
+            // If we've exhausted all retries and still failed
+            setLoading(false);
+          } else if (success) {
+            setLoading(false);
+          }
         }
       }
     };
@@ -61,6 +71,15 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
           </div>
         ) : loading ? (
           <div className="text-center py-4 flex-grow">Loading...</div>
+        ) : error ? (
+          // Dedicated error display section with better visibility
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center p-4 text-red-500 border border-red-200 rounded bg-red-50 max-w-xs">
+              <Typography variant="small" className="font-medium">
+                Error loading data: {error.message}
+              </Typography>
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col flex-grow">
             {/* Table Header */}
@@ -96,13 +115,6 @@ export function ResourceTable({ resourceGroup, selectedCompany }) {
                     ? tableRows[0].totalCost.toFixed(2) 
                     : "N/A"}
                 </Typography>
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && (
-              <div className="text-center py-4 text-red-500">
-                Error loading data: {error.message}
               </div>
             )}
           </div>
