@@ -18,12 +18,13 @@ const resourceGroups = {
     ["teting", "KUM Subscription"],
     ["uat-rg", "KUM Subscription"]
   ],
-  // Add other companies here as needed
   "33ea3b3a-5274-4aaa-9a19-b98e5b259a8c": [
     ["AzureBackupRG_centralindia_1", "Default Subscription"],
     ["cloud-shell-storage-centralindia", "Default Subscription"],
     // ... other default items
-  ]
+  ],
+  // Adding default options as fallback
+  "default": []
 };
 
 export function MenuListDropDown({ onChange, name, selectedCompany }) {
@@ -31,11 +32,14 @@ export function MenuListDropDown({ onChange, name, selectedCompany }) {
     onChange(menuItem);
   };
 
-  // Get options based on selected company
+  // Get options based on selected company with proper error handling
   const getCompanyOptions = () => {
     if (!selectedCompany?.id) return [];
-    return resourceGroups[selectedCompany.id] || resourceGroups.default;
+    return resourceGroups[selectedCompany.id] || [];
   };
+
+  // Get the options safely
+  const options = getCompanyOptions();
 
   return (
     <Menu className="border-0">
@@ -66,18 +70,24 @@ export function MenuListDropDown({ onChange, name, selectedCompany }) {
       <MenuList 
         className="max-h-60 p-0 overflow-y-auto rounded-md bg-white shadow-md border-0 w-64"
       >
-        {getCompanyOptions().map(([value, display], index) => (
-          <MenuItem 
-            key={index} 
-            onClick={() => handleMenuItemClick(value)}
-            className="px-4 py-2 hover:bg-gray-100"
-          >
-            <div className="flex justify-between w-full">
-              <span>{value}</span>
-              {/* <span className="text-gray-500 text-sm">{display}</span> */}
-            </div>
+        {Array.isArray(options) && options.length > 0 ? (
+          options.map(([value, display], index) => (
+            <MenuItem 
+              key={index} 
+              onClick={() => handleMenuItemClick(value)}
+              className="px-4 py-2 hover:bg-gray-100"
+            >
+              <div className="flex justify-between w-full">
+                <span>{value}</span>
+                {/* <span className="text-gray-500 text-sm">{display}</span> */}
+              </div>
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem className="px-4 py-2 text-gray-500">
+            No options available
           </MenuItem>
-        ))}
+        )}
       </MenuList>
     </Menu>
   );

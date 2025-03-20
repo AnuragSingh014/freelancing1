@@ -99,7 +99,7 @@ const CompanyExpense = ({selectedCompany}) => {
             Service Cost
           </div>
           <div className="mt-6 flex-1">
-            {/* <ServiceTable selectedCompany={selectedCompany}/> */}
+            <ServiceTable selectedCompany={selectedCompany}/>
           </div>
         </div>
 

@@ -184,14 +184,14 @@ const Table = ({ selectedCompany, month, onAggregateData }) => {
               <tr key={`${row.resourceGroup}-${row.vm}-${index}`} className={`${index % 2 ? 'bg-gray-100' : 'bg-blue-100'} hover:bg-gray-50`}>
                 <td className="py-4 px-6">{row.resourceGroup}</td>
                 <td className="py-4 px-6">{row.vm}</td>
-                <td className="py-4 px-6">{row.cpuCurrentAvg.toFixed(2)}%</td>
-                <td className="py-4 px-6">{row.cpuCurrentMax.toFixed(2)}%</td>
-                <td className="py-4 px-6">{row.cpuThreeAvg.toFixed(2)}%</td>
-                <td className="py-4 px-6">{row.cpuThreeMax.toFixed(2)}%</td>
-                <td className="py-4 px-6">{row.memoryCurrentAvg.toFixed(2)} GB</td>
-                <td className="py-4 px-6">{row.memoryCurrentMax.toFixed(2)} GB</td>
-                <td className="py-4 px-6">{row.memoryThreeAvg.toFixed(2)} GB</td>
-                <td className="py-4 px-6">{row.memoryThreeMax.toFixed(2)} GB</td>
+                <td className="py-4 px-6">{row.cpuCurrentAvg.toFixed(6)}%</td>
+                <td className="py-4 px-6">{row.cpuCurrentMax.toFixed(6)}%</td>
+                <td className="py-4 px-6">{row.cpuThreeAvg.toFixed(6)}%</td>
+                <td className="py-4 px-6">{row.cpuThreeMax.toFixed(6)}%</td>
+                <td className="py-4 px-6">{row.memoryCurrentAvg.toFixed(6)} GB</td>
+                <td className="py-4 px-6">{row.memoryCurrentMax.toFixed(6)} GB</td>
+                <td className="py-4 px-6">{row.memoryThreeAvg.toFixed(6)} GB</td>
+                <td className="py-4 px-6">{row.memoryThreeMax.toFixed(6)} GB</td>
               </tr>
             ))}
           </tbody>
