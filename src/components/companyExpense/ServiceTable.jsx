@@ -3,18 +3,30 @@ import { useEffect, useState } from "react";
 
 const TABLE_HEAD = ["Service", "Total Cost"];
 
-export function ServiceTable({selectedCompany }) {
+export function ServiceTable({ selectedCompany, date }) { 
   const [tableRows, setTableRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalCost, setTotalCost] = useState(0);
 
+  // Convert MMYY to YYYY-MM-DD format
+  const getFormattedDates = (date) => {
+    const month = date.slice(0, 2);
+    const year = `20${date.slice(2, 4)}`; // Assuming the year is in 20XX format
+    return {
+      from: `${year}-${month}-01`,
+      to: `${year}-${month}-30`
+    };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const { from, to } = getFormattedDates(date);
+        
         const response = await fetch(
-          `https://vsndirect.com/swagger/api/Consumption/CostManagementServiceBy?ClientId=${selectedCompany.id}`,
+          `https://vsndirect.com/swagger/api/Consumption/CostManagementServiceBy?ClientId=${selectedCompany.id}&from=${from}&to=${to}`,
           {
             method: "GET",
             headers: {
@@ -22,14 +34,13 @@ export function ServiceTable({selectedCompany }) {
             },
           }
         );
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
+
         const data = await response.json();
-        
-        // Extract rows from the properties object
+
         const rows = data.properties.rows.map(
           ([preTaxCost, usageDate, serviceName, currency]) => ({
             preTaxCost,
@@ -38,12 +49,9 @@ export function ServiceTable({selectedCompany }) {
             currency
           })
         );
-  
-        // Extract unique service names
+
         const uniqueServiceNames = [...new Set(rows.map(row => row.serviceName))];
-        console.log("Unique Service Names:", uniqueServiceNames);
-  
-        // Aggregate costs for each service
+
         const aggregatedData = uniqueServiceNames.map((service) => {
           const total = rows
             .filter(({ serviceName }) => serviceName === service)
@@ -54,13 +62,12 @@ export function ServiceTable({selectedCompany }) {
             totalCost: total 
           };
         });
-  
-        // Calculate grand total
+
         const grandTotal = aggregatedData.reduce(
           (sum, { totalCost }) => sum + totalCost,
           0
         );
-  
+
         setTableRows(aggregatedData);
         setTotalCost(grandTotal);
         setLoading(false);
@@ -70,10 +77,9 @@ export function ServiceTable({selectedCompany }) {
         setLoading(false);
       }
     };
-  
+
     fetchData();
-  }, [selectedCompany]);
-  
+  }, [selectedCompany, date]);
 
   return (
     <section className="bg-white">
