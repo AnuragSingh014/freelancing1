@@ -89,7 +89,7 @@ const CompanyExpense = ({selectedCompany}) => {
         </div>
       </div>
       <div className="mt-4 ">
-        {/* <CompanyChart selectedCompany={selectedCompany}/> */}
+        <CompanyChart selectedCompany={selectedCompany}/>
       </div>
       {/* Three Equal-Height Boxes */}
       <div className="flex w-full mt-16 gap-4">
@@ -107,15 +107,15 @@ const CompanyExpense = ({selectedCompany}) => {
         <div className="w-1/3 flex flex-col">
           <div className=" flex text-center items-center justify-center rounded-md text-xl px-4 py-8 bg-orange-300">
             <div className="">Resource Cost </div>
-            {/* <MenuListDropDown
+            <MenuListDropDown
               selectedCompany={selectedCompany}
               name={selectedMenuItem}
               className="text-black m-0 bg-orange-500 rounded-md text-xl"
               onChange={handleMenuItemChange}
-            /> */}
+            />
           </div>
           <div className="mt-6 flex-1">
-            {/* <ResourceTable resourceGroup={selectedMenuItem} selectedCompany={selectedCompany} date={selectedMonthYear} /> */}
+            <ResourceTable resourceGroup={selectedMenuItem} selectedCompany={selectedCompany} date={selectedMonthYear} />
           </div>
         </div>
 
@@ -125,7 +125,7 @@ const CompanyExpense = ({selectedCompany}) => {
             Subscription cost
           </div>
           <div className="mt-6 flex-1 h-screen">
-            {/* <AccountTable date={selectedMonthYear} selectedCompany={selectedCompany} className="min-h-screen"/> */}
+            <AccountTable date={selectedMonthYear} selectedCompany={selectedCompany} className="min-h-screen"/>
           </div>
         </div>
       </div>
