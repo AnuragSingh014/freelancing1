@@ -100,7 +100,7 @@ const CompanyExpense = ({selectedCompany}) => {
         </div>
       </div>
       <div className="mt-4 ">
-        <CompanyChart selectedCompany={selectedCompany}/>
+        {/* <CompanyChart selectedCompany={selectedCompany}/> */}
       </div>
       {/* Three Equal-Height Boxes */}
       <div className="flex w-full mt-16 gap-4">
