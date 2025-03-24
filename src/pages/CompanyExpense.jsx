@@ -8,23 +8,34 @@ import { AccountTable } from "../components/companyExpense/AccountTable";
 import CompanyChart from "../components/companyExpense/CompanyChart";
 
 const monthsData = [
-  { display: "May 24", value: "0524" },
-  { display: "Jun 24", value: "0624" },
-  { display: "Jul 24", value: "0724" },
-  { display: "Aug 24", value: "0824" },
-  { display: "Sep 24", value: "0924" },
-  { display: "Oct 24", value: "1024" },
-  { display: "Nov 24", value: "1124" },
   { display: "Dec 24", value: "1224" },
   { display: "Jan 25", value: "0125" },
   { display: "Feb 25", value: "0225" },
   { display: "Mar 25", value: "0325" },
-  { display: "Apr 25", value: "0425" }
+  { display: "Apr 25", value: "0425" },
+  { display: "May 25", value: "0525" },
+  { display: "Jun 25", value: "0625" },
+  { display: "Jul 25", value: "0725" },
+  { display: "Aug 25", value: "0825" },
+  { display: "Sep 25", value: "0925" },
+  { display: "Oct 25", value: "1025" },
+  { display: "Nov 25", value: "1125" },
+  { display: "Dec 25", value: "1225" }
 ];
 
+console.log(monthsData);
+
 const CompanyExpense = ({selectedCompany}) => {
+
+  const getInitialDate = () => {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = String(now.getFullYear()).slice(-2);
+    return month + year; // "0325" for March 2025
+  };
+
   const [selectedMenuItem, setSelectedMenuItem] = useState("");
-  const [selectedMonthYear, setSelectedMonthYear] = useState("0125");
+  const [selectedMonthYear, setSelectedMonthYear] = useState(getInitialDate());
 
   const handleMenuItemChange = (menuItem) => {
     setSelectedMenuItem(menuItem);

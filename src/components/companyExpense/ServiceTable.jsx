@@ -9,14 +9,24 @@ export function ServiceTable({ selectedCompany, date }) {
   const [error, setError] = useState(null);
   const [totalCost, setTotalCost] = useState(0);
 
-  // Convert MMYY to YYYY-MM-DD format
-  const getFormattedDates = (date) => {
-    const month = date.slice(0, 2);
-    const year = `20${date.slice(2, 4)}`; // Assuming the year is in 20XX format
-    return {
-      from: `${year}-${month}-01`,
-      to: `${year}-${month}-30`
-    };
+  // Convert MMYY to YYYY-MM-DD format with correct month end dates
+  const getFormattedDates = (dateStr) => {
+    const inputMonth = dateStr.slice(0, 2);
+    const inputYear = dateStr.slice(2, 4);
+    const month = parseInt(inputMonth, 10) - 1; // Convert to 0-based index
+    const year = 2000 + parseInt(inputYear, 10);
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const fromMonth = String(month + 1).padStart(2, '0');
+    const from = `${year}-${fromMonth}-01`;
+
+    const toMonth = String(month + 1).padStart(2, '0');
+    const toDay = String(lastDay.getDate()).padStart(2, '0');
+    const to = `${year}-${toMonth}-${toDay}`;
+
+    return { from, to };
   };
 
   useEffect(() => {
